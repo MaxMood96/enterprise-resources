@@ -7,11 +7,11 @@ web:
   annotations: {}
   resources:
     limits:
-      cpu: 512m
+      cpu: 1000m
       memory: 2048M
     requests:
-      cpu: 256m
-      memory: 2048M
+      cpu: 150m
+      memory: 128M
 
 api:
   image: codecov/enterprise-api
@@ -21,11 +21,11 @@ api:
   servicePort: 8000
   resources:
     limits:
-      cpu: 512m
+      cpu: 1000m
       memory: 2048M
     requests:
-      cpu: 256m
-      memory: 1024M
+      cpu: 250m
+      memory: 256M
 
 # worker deployment resources
 worker:
@@ -34,11 +34,11 @@ worker:
   annotations: {}
   resources:
     limits:
-      cpu: 512m
-      memory: 2048M
+      cpu: 3000m # limit to number of CPU cores available if possible (1000 * cores)
+      memory: 4096M
     requests:
-      cpu: 256m
-      memory: 2048M
+      cpu: 500m
+      memory: 1024M
 
 # optional tags which are set as annotations on the web and worker deployments
 tags:

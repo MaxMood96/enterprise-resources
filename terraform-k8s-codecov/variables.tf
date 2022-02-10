@@ -30,6 +30,36 @@ variable "resource_tags" {
   }
 }
 
+variable "web_resources" {
+  type = map
+  default = {
+    cpu_limit      = "1000m"
+    memory_limit   = "2048M"
+    cpu_request    = "150m"
+    memory_request = "128M"
+  }
+}
+
+variable "api_resources" {
+  type = map
+  default = {
+    cpu_limit      = "1000m"
+    memory_limit   = "2048M"
+    cpu_request    = "250m"
+    memory_request = "256M"
+  }
+}
+
+variable "worker_resources" {
+  type = map
+  default = {
+    cpu_limit      = "3000m"
+    memory_limit   = "1024M"
+    cpu_request    = "500m"
+    memory_request = "1024M"
+  }
+}
+
 # 
 variable "scm_ca_cert" {
   description = "SCM CA certificate path"

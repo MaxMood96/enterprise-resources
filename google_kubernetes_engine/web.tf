@@ -94,12 +94,12 @@ resource "kubernetes_deployment" "web" {
           }
           resources {
             limits {
-              cpu    = var.web_resources["cpu_limit"]
-              memory = var.web_resources["memory_limit"]
+              cpu    = var.api_resources["cpu_limit"]
+              memory = var.api_resources["memory_limit"]
             }
             requests {
-              cpu    = var.web_resources["cpu_request"]
-              memory = var.web_resources["memory_request"]
+              cpu    = var.api_resources["cpu_request"]
+              memory = var.api_resources["memory_request"]
             }
           }
           readiness_probe {

@@ -37,14 +37,19 @@ variable "node_pool_machine_type" {
   default     = "n1-standard-1"
 }
 
+variable "node_pool_worker_machine_type" {
+  description = "Machine type to use for the worker node pool"
+  default     = "n1-standard-4"
+}
+
 variable "web_resources" {
   type = map
   default = {
     replicas       = 2
-    cpu_limit      = "256m"
-    memory_limit   = "512M"
-    cpu_request    = "32m"
-    memory_request = "64M"
+    cpu_limit      = "1000m"
+    memory_limit   = "2048M"
+    cpu_request    = "150m"
+    memory_request = "128M"
   }
 }
 
@@ -52,21 +57,21 @@ variable "api_resources" {
   type = map
   default = {
     replicas       = 2
-    cpu_limit      = "256m"
-    memory_limit   = "512M"
-    cpu_request    = "32m"
-    memory_request = "64M"
+    cpu_limit      = "1000m"
+    memory_limit   = "2048M"
+    cpu_request    = "250m"
+    memory_request = "256M"
   }
 }
 
 variable "worker_resources" {
   type = map
   default = {
-    replicas       = 3
-    cpu_limit      = "512m"
+    replicas       = 2
+    cpu_limit      = "3000m"
     memory_limit   = "1024M"
-    cpu_request    = "256m"
-    memory_request = "512M"
+    cpu_request    = "500m"
+    memory_request = "1024M"
   }
 }
 
@@ -74,9 +79,9 @@ variable "traefik_resources" {
   type = map
   default = {
     replicas       = 2
-    cpu_limit      = "256m"
+    cpu_limit      = "500m"
     memory_limit   = "512M"
-    cpu_request    = "32m"
+    cpu_request    = "50m"
     memory_request = "64M"
   }
 }

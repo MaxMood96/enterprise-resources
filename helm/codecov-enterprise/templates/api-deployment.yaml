@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -5,68 +6,103 @@ metadata:
   {{- range $key, $val := .Values.tags }}
     {{ $key }}: {{ $val | quote }}
   {{- end }}
-  name: api
+  {{- range $key, $val := .Values.api.deployment.annotations }}
+      {{ $key }}: {{ $val | quote }}
+  {{- end }}
+  name: {{ .Values.api.name }}
+  labels:
+    chart: {{ .Chart.Name }}
+    release: {{ .Release.Name | quote }}
+    {{- range $key, $value := .Values.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
 spec:
-  replicas: {{ .Values.api.replicas }}
+  replicas: {{ .Values.api.deployment.replicas }}
   selector:
     matchLabels:
-      app: api
+      app: {{ .Values.api.name }}
   strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
+  {{ toYaml .Values.api.deployment.updateStrategy | indent 4 }}
   template:
     metadata:
       labels:
-        app: api
+        app: {{ .Values.api.name }}
+        release: {{ .Release.Name | quote }}
       annotations:
-      {{- range $key, $value := .Values.api.annotations }}
+      {{- range $key, $val := .Values.tags }}
+        {{ $key }}: {{ $val | quote }}
+      {{- end }}
+      {{- range $key, $value := .Values.api.deployment.annotations }}
         {{ $key }}: {{ $value | quote }}
       {{- end }}
     spec:
+      {{- if .Values.podSecurityContext }}
+      securityContext:
+      {{ toYaml .Values.podSecurityContext | indent 10 }}
+      {{- end }}
+      {{- with .Values.api.deployment.nodeSelector }}
+      nodeSelector:
+      {{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.api.deployment.affinity }}
+      affinity:
+      {{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.api.deployment.tolerations }}
+      tolerations:
+      {{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
       containers:
+      {{- with .Values.extraEnvs }}
       - env:
-        - name: THIS_POD_IP
-          valueFrom:
-            fieldRef:
-              apiVersion: v1
-              fieldPath: status.podIP
+        {{ toYaml . | nindent 10 }}
+      {{- end }}
+      {{- if .Values.envFrom }}
+        envFrom:
+        {{ toYaml .Values.envFrom | indent 10 }}
+      {{- end }}
         image: {{ .Values.api.image }}:{{ .Values.codecovVersion }}
-        imagePullPolicy: Always
-        name: api
+        imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+        name: {{ .Values.api.name }}
         ports:
-        - containerPort: {{ .Values.api.port }}
+        - containerPort: {{ .Values.api.deployment.port }}
           protocol: TCP
+          name: http
+        livenessProbe:
+        {{ toYaml .Values.api.deployment.livenessProbe | indent 10 }}
         readinessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /
-            port: {{ .Values.api.port }}
-            scheme: HTTP
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          successThreshold: 1
-          timeoutSeconds: 1
-        resources: 
-          limits:
-            cpu: {{ .Values.api.resources.limits.cpu }}
-            memory: {{ .Values.api.resources.limits.memory }}
-          requests:
-            cpu: {{ .Values.api.resources.requests.cpu }}
-            memory: {{ .Values.api.resources.requests.memory }}
+        {{ toYaml .Values.api.deployment.readinessProbe | indent 10 }}
+        resources:
+        {{ toYaml .Values.api.deployment.resources | indent 10 }}
         volumeMounts:
+        {{- range .Values.secretMounts }}
+          - name: {{ .name }}
+            mountPath: {{ .path }}
+            {{- if .subPath }}
+            subPath: {{ .subPath }}
+            {{- end }}
+        {{- end }}
         - mountPath: /config
           name: codecov-yml
           readOnly: true
-        - mountPath: /cert
-          name: scm-ca-cert
-          readOnly: true
       restartPolicy: Always
       volumes:
+      {{- range .Values.secretMounts }}
+        - name: {{ .name }}
+          secret:
+            secretName: {{ .secretName }}
+      {{- end }}
       - name: codecov-yml
-        secret:
-          secretName: codecov-yml
-      - name: scm-ca-cert
-        secret:
-          secretName: scm-ca-cert
+        configMap:
+          name: {{ .Values.configmap.name }}
+          defaultMode: 420
+      {{- if .Values.extraVolumes }}
+      {{ toYaml .Values.extraVolumes | indent 8 }}
+      {{- end }}
+  {{- if .Values.extraVolumes }}
+  {{ toYaml .Values.extraVolumeMounts | indent 10 }}
+  {{- end }}

@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configmap.name }}
+  annotations:
+  {{- range $key, $val := .Values.tags }}
+    {{ $key }}: {{ $val | quote }}
+  {{- end }}
+  labels:
+    chart: {{ .Chart.Name }}
+    release: {{ .Release.Name | quote }}
+    {{- range $key, $value := .Values.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+data:
+  codecov.yml: |
+    {{- toYaml .Values.codecovConfig | nindent 4 }}

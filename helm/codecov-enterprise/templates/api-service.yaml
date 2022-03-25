@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -5,12 +6,24 @@ metadata:
   {{- range $key, $val := .Values.tags }}
     {{ $key }}: {{ $val | quote }}
   {{- end }}
-  name: api
+  {{- range $key, $val := .Values.api.service.annotations }}
+    {{ $key }}: {{ $val | quote }}
+  {{- end }}
+  name: {{ .Values.api.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    chart: {{ .Chart.Name }}
+    release: {{ .Release.Name | quote }}
+    heritage: {{ .Release.Service }}
+    {{- range $key, $value := .Values.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
 spec:
   ports:
-  - port: {{ .Values.api.servicePort }}
+  - port: {{ .Values.api.service.port }}
     protocol: TCP
-    targetPort: {{ .Values.api.port }}
+    name: http
+    targetPort: {{ .Values.api.deployment.port }}
   selector:
-    app: api
-  type: NodePort
+    app: {{ .Values.api.name }}
+  type: {{ .Values.api.service.type }}

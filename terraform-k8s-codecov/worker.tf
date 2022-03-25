@@ -37,12 +37,12 @@ resource "kubernetes_deployment" "worker" {
           }
           resources {
             limits {
-              cpu    = "512m"
-              memory = "2048M"
+              cpu    = var.worker_resources["cpu_limit"]
+              memory = var.worker_resources["memory_limit"]
             }
             requests {
-              cpu    = "256m"
-              memory = "2048M"
+              cpu    = var.worker_resources["cpu_request"]
+              memory = var.worker_resources["memory_request"]
             }
           }
           image_pull_policy = "Always"

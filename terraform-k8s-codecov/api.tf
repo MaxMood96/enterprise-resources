@@ -45,12 +45,12 @@ resource "kubernetes_deployment" "api" {
           }
           resources {
             limits {
-              cpu    = "256m"
-              memory = "512M"
+              cpu    = var.api_resources["cpu_limit"]
+              memory = var.api_resources["memory_limit"]
             }
             requests {
-              cpu    = "32m"
-              memory = "64M"
+              cpu    = var.api_resources["cpu_request"]
+              memory = var.api_resources["memory_request"]
             }
           }
           readiness_probe {

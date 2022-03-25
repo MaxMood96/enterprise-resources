@@ -102,7 +102,7 @@ resource "google_container_node_pool" "worker" {
     )
 
     preemptible  = true
-    machine_type = var.node_pool_machine_type
+    machine_type = var.node_pool_worker_machine_type
 
     metadata = {
       disable-legacy-endpoints = "true"

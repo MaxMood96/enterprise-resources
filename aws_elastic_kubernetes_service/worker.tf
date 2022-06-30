@@ -1,6 +1,6 @@
 resource "kubernetes_deployment" "worker" {
   metadata {
-    name = "worker"
+    name        = "worker"
     annotations = var.resource_tags
   }
   spec {
@@ -52,7 +52,7 @@ resource "kubernetes_deployment" "worker" {
             }
           }
           env {
-            name = "STATSD_PORT"
+            name  = "STATSD_PORT"
             value = "8125"
           }
           env {
@@ -76,11 +76,11 @@ resource "kubernetes_deployment" "worker" {
             value = "true"
           }
           resources {
-            limits {
+            limits = {
               cpu    = var.worker_resources["cpu_limit"]
               memory = var.worker_resources["memory_limit"]
             }
-            requests {
+            requests = {
               cpu    = var.worker_resources["cpu_request"]
               memory = var.worker_resources["memory_request"]
             }

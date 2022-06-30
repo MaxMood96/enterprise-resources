@@ -1,5 +1,5 @@
 resource "aws_db_subnet_group" "postgres" {
-  name = "codecov-postgres"
+  name       = "codecov-postgres"
   subnet_ids = module.vpc.private_subnets
 
   tags = var.resource_tags
@@ -41,7 +41,7 @@ resource "aws_db_instance" "postgres" {
   storage_type              = "gp2"
   instance_class            = var.postgres_instance_class
   db_subnet_group_name      = aws_db_subnet_group.postgres.name
-  name                      = "codecov"
+  db_name                   = "codecov"
   username                  = "codecov"
   password                  = random_string.postgres-password.result
   vpc_security_group_ids    = [aws_security_group.postgres.id]
@@ -52,7 +52,7 @@ resource "aws_db_instance" "postgres" {
 }
 
 resource "aws_elasticache_subnet_group" "redis" {
-  name = "codecov-redis"
+  name       = "codecov-redis"
   subnet_ids = module.vpc.private_subnets
 }
 

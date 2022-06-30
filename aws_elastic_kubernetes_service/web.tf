@@ -1,6 +1,6 @@
 resource "kubernetes_deployment" "web" {
   metadata {
-    name = "web"
+    name        = "web"
     annotations = var.resource_tags
   }
   spec {
@@ -54,7 +54,7 @@ resource "kubernetes_deployment" "web" {
             }
           }
           env {
-            name = "STATSD_PORT"
+            name  = "STATSD_PORT"
             value = "8125"
           }
           env {
@@ -78,11 +78,11 @@ resource "kubernetes_deployment" "web" {
             value = "true"
           }
           resources {
-            limits {
+            limits = {
               cpu    = var.web_resources["cpu_limit"]
               memory = var.web_resources["memory_limit"]
             }
-            requests {
+            requests = {
               cpu    = var.web_resources["cpu_request"]
               memory = var.web_resources["memory_request"]
             }
@@ -123,7 +123,7 @@ resource "kubernetes_deployment" "web" {
 
 resource "kubernetes_service" "web" {
   metadata {
-    name = "web"
+    name        = "web"
     annotations = var.resource_tags
   }
   spec {

@@ -1,6 +1,6 @@
 resource "kubernetes_deployment" "api" {
   metadata {
-    name = "api"
+    name        = "api"
     annotations = var.resource_tags
   }
   spec {
@@ -55,7 +55,7 @@ resource "kubernetes_deployment" "api" {
             }
           }
           env {
-            name = "STATSD_PORT"
+            name  = "STATSD_PORT"
             value = "8125"
           }
           env {
@@ -67,11 +67,11 @@ resource "kubernetes_deployment" "api" {
             value = local.redis_url
           }
           resources {
-            limits {
+            limits = {
               cpu    = var.api_resources["cpu_limit"]
               memory = var.api_resources["memory_limit"]
             }
-            requests {
+            requests = {
               cpu    = var.api_resources["cpu_request"]
               memory = var.api_resources["memory_request"]
             }
@@ -112,7 +112,7 @@ resource "kubernetes_deployment" "api" {
 
 resource "kubernetes_service" "api" {
   metadata {
-    name = "api"
+    name        = "api"
     annotations = var.resource_tags
   }
   spec {

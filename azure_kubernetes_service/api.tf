@@ -68,11 +68,11 @@ resource "kubernetes_deployment" "api" {
             value = local.redis_url
           }
           resources {
-            limits {
+            limits = {
               cpu    = var.api_resources["cpu_limit"]
               memory = var.api_resources["memory_limit"]
             }
-            requests {
+            requests = {
               cpu    = var.api_resources["cpu_request"]
               memory = var.api_resources["memory_request"]
             }

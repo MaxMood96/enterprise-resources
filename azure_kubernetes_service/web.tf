@@ -94,11 +94,11 @@ resource "kubernetes_deployment" "web" {
             value = azurerm_storage_account.minio.name
           }
           resources {
-            limits {
+            limits = {
               cpu    = var.web_resources["cpu_limit"]
               memory = var.web_resources["memory_limit"]
             }
-            requests {
+            requests = {
               cpu    = var.web_resources["cpu_request"]
               memory = var.web_resources["memory_request"]
             }

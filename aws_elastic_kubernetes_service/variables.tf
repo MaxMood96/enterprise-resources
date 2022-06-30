@@ -55,7 +55,7 @@ variable "worker_node_type" {
 }
 
 variable "web_resources" {
-  type = map
+  type = map(any)
   default = {
     replicas       = 2
     cpu_limit      = "1000m"
@@ -66,7 +66,7 @@ variable "web_resources" {
 }
 
 variable "api_resources" {
-  type = map
+  type = map(any)
   default = {
     replicas       = 2
     cpu_limit      = "1000m"
@@ -77,7 +77,7 @@ variable "api_resources" {
 }
 
 variable "worker_resources" {
-  type = map
+  type = map(any)
   default = {
     replicas       = 2
     cpu_limit      = "3000m"
@@ -88,7 +88,7 @@ variable "worker_resources" {
 }
 
 variable "traefik_resources" {
-  type = map
+  type = map(any)
   default = {
     replicas       = 2
     cpu_limit      = "500m"
@@ -128,7 +128,7 @@ variable "tls_cert" {
 }
 
 variable "resource_tags" {
-  type = map
+  type = map(any)
   default = {
     application = "codecov"
     environment = "test"

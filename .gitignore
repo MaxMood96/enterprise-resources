@@ -14,3 +14,4 @@ kubeconfig_default-codecov-cluster
 config-map-aws-auth_default-codecov-cluster.yaml
 *.log
 ssh_key.pub
+.idea

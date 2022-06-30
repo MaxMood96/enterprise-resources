@@ -50,7 +50,7 @@ resource "kubernetes_service_account" "traefik" {
 
 resource "kubernetes_cluster_role" "traefik" {
   metadata {
-    name      = "codecov-traefik"
+    name = "codecov-traefik"
   }
 
   rule {

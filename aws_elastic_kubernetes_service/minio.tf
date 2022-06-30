@@ -1,11 +1,11 @@
 resource "aws_iam_policy" "minio-s3" {
-  name = "codecov-minio-s3"
+  name   = "codecov-minio-s3"
   policy = data.aws_iam_policy_document.minio-s3.json
 }
 
 data "aws_iam_policy_document" "minio-s3" {
   statement {
-    sid = "AllowObjectActions"
+    sid    = "AllowObjectActions"
     effect = "Allow"
     actions = [
       "s3:PutObject",
@@ -18,7 +18,7 @@ data "aws_iam_policy_document" "minio-s3" {
   }
 
   statement {
-    sid = "AllowListBucket"
+    sid    = "AllowListBucket"
     effect = "Allow"
     actions = [
       "s3:ListBucket"
@@ -29,7 +29,7 @@ data "aws_iam_policy_document" "minio-s3" {
   }
 
   statement {
-    sid = "AllowAllS3"
+    sid    = "AllowAllS3"
     effect = "Allow"
     actions = [
       "s3:ListAllMyBuckets",
@@ -48,7 +48,11 @@ resource "random_pet" "minio-bucket-suffix" {
 
 resource "aws_s3_bucket" "minio" {
   bucket = "codecov-minio-${random_pet.minio-bucket-suffix.id}"
-  acl    = "private"
 
   tags = var.resource_tags
+}
+
+resource "aws_s3_bucket_acl" "minio" {
+  bucket = aws_s3_bucket.minio.id
+  acl    = "private"
 }

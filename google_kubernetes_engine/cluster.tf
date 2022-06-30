@@ -23,9 +23,9 @@ resource "google_container_cluster" "primary" {
   network = google_compute_network.codecov.name
 
   private_cluster_config {
-    enable_private_nodes = "true"
+    enable_private_nodes    = "true"
     enable_private_endpoint = "false"
-    master_ipv4_cidr_block = "10.254.0.0/28"
+    master_ipv4_cidr_block  = "10.254.0.0/28"
   }
 
   # We can't create a cluster with no node pool defined, but we want to only use
@@ -34,11 +34,7 @@ resource "google_container_cluster" "primary" {
   remove_default_node_pool = true
   initial_node_count       = 1
 
-  # Setting an empty username and password explicitly disables basic auth
   master_auth {
-    username = ""
-    password = ""
-
     client_certificate_config {
       issue_client_certificate = "true"
     }
@@ -68,7 +64,7 @@ resource "google_container_node_pool" "web" {
 
   node_config {
     labels = merge({
-        role = "web"
+      role = "web"
       },
       var.resource_tags
     )
@@ -96,7 +92,7 @@ resource "google_container_node_pool" "worker" {
 
   node_config {
     labels = merge({
-        role = "worker"
+      role = "worker"
       },
       var.resource_tags
     )

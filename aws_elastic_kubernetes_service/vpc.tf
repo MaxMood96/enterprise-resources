@@ -7,7 +7,7 @@ data "aws_availability_zones" "list" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "2.33.0"
+  version = "~> v2.0"
   name    = "codecov-vpc"
   cidr    = "10.0.16.0/20"
   azs = [
@@ -28,7 +28,7 @@ module "vpc" {
   enable_nat_gateway = true
   single_nat_gateway = true
   tags = merge({
-      "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
     },
     var.resource_tags
   )

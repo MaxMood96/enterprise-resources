@@ -1,27 +1,16 @@
-terraform {
-  required_version = ">= 0.12"
-}
-
-# provider block and features block are now required
-# https://github.com/terraform-providers/terraform-provider-azurerm/blob/master/CHANGELOG.md#200-february-24-2020
 provider "azurerm" {
-  version = "~>2.17"
-  features {} 
+  features {}
 }
 
-provider "local" {
-  version = "~>1.4"
+provider "kubernetes" {
+  host = azurerm_kubernetes_cluster.codecov-enterprise.kube_config[0].host
+  cluster_ca_certificate = base64decode(
+    azurerm_kubernetes_cluster.codecov-enterprise.kube_config[0].cluster_ca_certificate,
+  )
+  client_certificate = base64decode(
+    azurerm_kubernetes_cluster.codecov-enterprise.kube_config[0].client_certificate,
+  )
+  client_key = base64decode(
+    azurerm_kubernetes_cluster.codecov-enterprise.kube_config[0].client_key,
+  )
 }
-
-provider "null" {
-  version = "~>2.1"
-}
-
-provider "random" {
-  version = "~>2.2"
-}
-
-provider "template" {
-  version = "~>2.1"
-}
-

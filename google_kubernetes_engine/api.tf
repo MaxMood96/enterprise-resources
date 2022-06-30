@@ -1,6 +1,6 @@
 resource "kubernetes_deployment" "api" {
   metadata {
-    name = "api"
+    name        = "api"
     annotations = var.resource_tags
   }
   spec {
@@ -47,7 +47,7 @@ resource "kubernetes_deployment" "api" {
             }
           }
           env {
-            name = "STATSD_PORT"
+            name  = "STATSD_PORT"
             value = "8125"
           }
           env {
@@ -59,11 +59,11 @@ resource "kubernetes_deployment" "api" {
             value = "redis://${google_redis_instance.codecov.host}:${google_redis_instance.codecov.port}"
           }
           resources {
-            limits {
+            limits = {
               cpu    = var.api_resources["cpu_limit"]
               memory = var.api_resources["memory_limit"]
             }
-            requests {
+            requests = {
               cpu    = var.api_resources["cpu_request"]
               memory = var.api_resources["memory_request"]
             }

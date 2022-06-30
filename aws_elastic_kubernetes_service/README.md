@@ -121,18 +121,19 @@ terraform and create the stack following these steps:
 1. Run `terraform init`.  This will download the necessary provider modules and
    prepare your terraform environment for execution.  [Terraform
    init](https://www.terraform.io/docs/commands/init.html)
-1. Create a plan: `terraform plan -out=plan.out`.  This checks the current
+2. Create a plan: `terraform plan -out=plan.out`.  This checks the current
    state and saves an execution plan to `plan.out`.  [Terraform
    plan](https://www.terraform.io/docs/commands/plan.html)
-1. If you're satisfied with the execution plan, apply it.  `terraform apply
+3. If you're satisfied with the execution plan, apply it.  `terraform apply
    plan.out`.  This will begin creating your stack.  [Terraform
    apply](https://www.terraform.io/docs/commands/apply.html)
-1. Due to limitations of the current version of Terraform, the `apply` will
+4. Due to limitations of the current version of Terraform, the `apply` will
    likely encounter an error when attempting to create kubernetes resources.
    This is due to a race condition between the EKS module and the kubernetes
    provider.  Repeating the `plan`, then `apply` procedure above will complete
-   creation of the kubernetes resources.
-1. Wait... this will take a little while.  If everything goes well, you will
+   creation of the kubernetes resources. Also due to an open bug with the EKS module, 
+   `terraform apply -target aws_iam_policy.minio-s3` will need to be ran prior to the main apply working.
+5. Wait... this will take a little while.  If everything goes well, you will
    see something like this:
      ```
      [...]
@@ -142,7 +143,7 @@ terraform and create the stack following these steps:
      
      ingress-lb-hostname = xxxx.elb.amazonaws.com
      ```
-1. The ingress hostname and minio API keys are output at the end of the run.
+6. The ingress hostname and minio API keys are output at the end of the run.
    Create a DNS CNAME record for the `ingress_host` above pointing at the
    resulting `ingress-lb-hostname`.  If you wish to use a tool to access your
    reports through minio, you can use the key pair above to access it

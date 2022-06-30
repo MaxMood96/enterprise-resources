@@ -8,6 +8,7 @@ locals {
   worker_groups = [
     {
       name                 = "web"
+      launch_template_name = "web"
       instance_type        = var.web_node_type
       subnets              = module.vpc.private_subnets
       asg_desired_capacity = var.web_nodes
@@ -16,6 +17,7 @@ locals {
     },
     {
       name                 = "worker"
+      launch_template_name = "worker"
       instance_type        = var.worker_node_type
       subnets              = module.vpc.private_subnets
       asg_desired_capacity = var.worker_nodes
@@ -26,13 +28,14 @@ locals {
 }
 
 module "eks" {
-  source                             = "terraform-aws-modules/eks/aws"
-  version                            = "11.1.0"
-  cluster_name                       = var.cluster_name
-  subnets                            = module.vpc.private_subnets
-  vpc_id                             = module.vpc.vpc_id
-  worker_groups                      = local.worker_groups
-  cluster_enabled_log_types          = ["api", "controllerManager", "scheduler"]
-  workers_additional_policies        = [aws_iam_policy.minio-s3.id]
+  source                       = "terraform-aws-modules/eks/aws"
+  version                      = "~> 18"
+  cluster_name                 = var.cluster_name
+  subnet_ids                   = module.vpc.private_subnets
+  vpc_id                       = module.vpc.vpc_id
+  self_managed_node_groups     = local.worker_groups
+  cluster_enabled_log_types    = ["api", "controllerManager", "scheduler"]
+  iam_role_additional_policies = [aws_iam_policy.minio-s3.id]
+  create_iam_role              = true
 }
 

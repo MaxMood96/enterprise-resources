@@ -31,7 +31,7 @@ EOF
 resource "kubernetes_config_map" "traefik-toml" {
   count = var.enable_traefik
   metadata {
-    name = "traefik-config"
+    name        = "traefik-config"
     annotations = var.resource_tags
   }
   data = {
@@ -48,7 +48,7 @@ resource "kubernetes_config_map" "traefik-toml" {
 resource "kubernetes_secret" "traefik-tls" {
   count = var.enable_traefik
   metadata {
-    name = "traefik-tls"
+    name        = "traefik-tls"
     annotations = var.resource_tags
   }
   type = "tls"
@@ -61,7 +61,7 @@ resource "kubernetes_secret" "traefik-tls" {
 resource "kubernetes_deployment" "traefik" {
   count = var.enable_traefik
   metadata {
-    name = "traefik"
+    name        = "traefik"
     annotations = var.resource_tags
   }
   spec {
@@ -127,11 +127,11 @@ resource "kubernetes_deployment" "traefik" {
             value = "443"
           }
           resources {
-            limits {
+            limits = {
               cpu    = var.traefik_resources["cpu_limit"]
               memory = var.traefik_resources["memory_limit"]
             }
-            requests {
+            requests = {
               cpu    = var.traefik_resources["cpu_request"]
               memory = var.traefik_resources["memory_request"]
             }
@@ -167,7 +167,7 @@ resource "kubernetes_deployment" "traefik" {
 resource "kubernetes_service" "traefik" {
   count = var.enable_traefik
   metadata {
-    name = "traefik"
+    name        = "traefik"
     annotations = var.resource_tags
   }
   spec {
@@ -195,7 +195,7 @@ resource "kubernetes_ingress" "traefik" {
   metadata {
     name = "traefik"
     annotations = merge({
-        "kubernetes.io/ingress.class" = "traefik"
+      "kubernetes.io/ingress.class" = "traefik"
       },
       var.resource_tags
     )
@@ -216,6 +216,6 @@ resource "kubernetes_ingress" "traefik" {
   }
 }
 
-output "ingress-ip" {
-  value = length(kubernetes_service.traefik) > 0 ? kubernetes_service.traefik[0].load_balancer_ingress[0].ip : null
+output "ingress-lb-ip" {
+  value = length(kubernetes_service.traefik[0].status[0].load_balancer[0]) > 0 ? kubernetes_service.traefik[0].status[0].load_balancer[0].ingress[0].ip : null
 }

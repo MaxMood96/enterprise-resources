@@ -8,7 +8,7 @@ resource "google_storage_bucket" "minio" {
 
 resource "kubernetes_secret" "minio-access-key" {
   metadata {
-    name = "minio-access-key"
+    name        = "minio-access-key"
     annotations = var.resource_tags
   }
   data = {
@@ -18,7 +18,7 @@ resource "kubernetes_secret" "minio-access-key" {
 
 resource "kubernetes_secret" "minio-secret-key" {
   metadata {
-    name = "minio-secret-key"
+    name        = "minio-secret-key"
     annotations = var.resource_tags
   }
   data = {

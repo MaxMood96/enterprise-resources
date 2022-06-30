@@ -1,6 +1,6 @@
 resource "kubernetes_deployment" "worker" {
   metadata {
-    name = "worker"
+    name        = "worker"
     annotations = var.resource_tags
   }
   spec {
@@ -36,11 +36,11 @@ resource "kubernetes_deployment" "worker" {
             }
           }
           resources {
-            limits {
+            limits = {
               cpu    = var.worker_resources["cpu_limit"]
               memory = var.worker_resources["memory_limit"]
             }
-            requests {
+            requests = {
               cpu    = var.worker_resources["cpu_request"]
               memory = var.worker_resources["memory_request"]
             }

@@ -73,11 +73,11 @@ resource "kubernetes_deployment" "minio_storage" {
             }
           }
           resources {
-            limits {
+            limits = {
               cpu    = var.minio_resources["cpu_limit"]
               memory = var.minio_resources["memory_limit"]
             }
-            requests {
+            requests = {
               cpu    = var.minio_resources["cpu_request"]
               memory = var.minio_resources["memory_request"]
             }

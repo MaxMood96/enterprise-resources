@@ -23,7 +23,7 @@ variable "codecov_yml" {
 }
 
 variable "resource_tags" {
-  type = map
+  type = map(any)
   default = {
     application = "codecov"
     environment = "test"
@@ -31,7 +31,7 @@ variable "resource_tags" {
 }
 
 variable "web_resources" {
-  type = map
+  type = map(any)
   default = {
     cpu_limit      = "1000m"
     memory_limit   = "2048M"
@@ -41,7 +41,7 @@ variable "web_resources" {
 }
 
 variable "api_resources" {
-  type = map
+  type = map(any)
   default = {
     cpu_limit      = "1000m"
     memory_limit   = "2048M"
@@ -51,7 +51,7 @@ variable "api_resources" {
 }
 
 variable "worker_resources" {
-  type = map
+  type = map(any)
   default = {
     cpu_limit      = "3000m"
     memory_limit   = "1024M"

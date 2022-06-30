@@ -20,7 +20,7 @@ resource "google_sql_database_instance" "codecov" {
   region           = var.region
 
   settings {
-    tier = var.postgres_instance_type
+    tier        = var.postgres_instance_type
     user_labels = var.resource_tags
   }
 }

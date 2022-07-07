@@ -1,25 +1,25 @@
-resource "kubernetes_deployment" "api" {
+resource "kubernetes_deployment" "worker" {
   metadata {
-    name        = "api"
+    name        = "worker"
     annotations = var.resource_tags
+    namespace   = var.codecov_namespace
   }
   spec {
-    replicas = var.api_resources["replicas"]
+    replicas = var.worker_resources["replicas"]
     selector {
       match_labels = {
-        app = "api"
+        app = "worker"
       }
     }
     template {
       metadata {
         labels = {
-          app = "api"
+          app = "worker"
         }
       }
       spec {
         node_selector = {
-          #Run the api pods on the web nodes as they are lightweight. This can be split out if needed.
-          "kubernetes.io/role" = "web"
+          "role" = "worker"
         }
         service_account_name = kubernetes_service_account.codecov.metadata[0].name
         volume {
@@ -41,22 +41,30 @@ resource "kubernetes_deployment" "api" {
           }
         }
         container {
-          name  = "api"
-          image = "codecov/enterprise-api:${var.codecov_version}"
-          port {
-            container_port = 8000
-          }
-          env {
-            name = "STATSD_HOST"
-            value_from {
-              field_ref {
-                field_path = "status.hostIP"
+          name  = "worker"
+          #command = ["sleep", "9000"]
+          image = "codecov/enterprise-worker:${var.codecov_version}"
+#          security_context {
+#            run_as_user = 0
+#          }
+          args  = ["worker", "--queue celery,uploads", "--concurrency 1"]
+          dynamic "env" {
+            for_each = var.statsd_enabled ? { host = true } : {}
+            content {
+              name = "STATSD_HOST"
+              value_from {
+                field_ref {
+                  field_path = "status.hostIP"
+                }
               }
             }
           }
-          env {
-            name  = "STATSD_PORT"
-            value = "8125"
+          dynamic "env" {
+            for_each = var.statsd_enabled ? { host = true } : {}
+            content {
+              name  = "STATSD_PORT"
+              value = "8125"
+            }
           }
           env {
             name  = "SERVICES__DATABASE_URL"
@@ -66,23 +74,27 @@ resource "kubernetes_deployment" "api" {
             name  = "SERVICES__REDIS_URL"
             value = local.redis_url
           }
+          env {
+            name  = "SERVICES__MINIO__HOST"
+            value = "s3.us-east-1.amazonaws.com"
+          }
+          env {
+            name  = "SERVICES__MINIO__PORT"
+            value = 443
+          }
+          env {
+            name  = "SERVICES__MINIO__BUCKET"
+            value = local.connection_strings.minio_bucket
+          }
           resources {
             limits = {
-              cpu    = var.api_resources["cpu_limit"]
-              memory = var.api_resources["memory_limit"]
+              cpu    = var.worker_resources["cpu_limit"]
+              memory = var.worker_resources["memory_limit"]
             }
             requests = {
-              cpu    = var.api_resources["cpu_request"]
-              memory = var.api_resources["memory_request"]
+              cpu    = var.worker_resources["cpu_request"]
+              memory = var.worker_resources["memory_request"]
             }
-          }
-          readiness_probe {
-            http_get {
-              path = "/health"
-              port = "8000"
-            }
-            initial_delay_seconds = 5
-            period_seconds        = 5
           }
           image_pull_policy = "Always"
           volume_mount {
@@ -107,22 +119,14 @@ resource "kubernetes_deployment" "api" {
         }
       }
     }
-  }
-}
-
-resource "kubernetes_service" "api" {
-  metadata {
-    name        = "api"
-    annotations = var.resource_tags
-  }
-  spec {
-    port {
-      protocol    = "TCP"
-      port        = "8000"
-      target_port = "8000"
+    strategy {
+      type = "RollingUpdate"
     }
-    selector = {
-      app = "api"
-    }
+  }
+  lifecycle {
+    ignore_changes = [spec.0.template.0.spec.0.volume, spec.0.template.0.spec.0.container.0.volume_mount]
+  }
+  timeouts {
+    create = "300s"
   }
 }

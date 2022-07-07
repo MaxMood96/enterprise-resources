@@ -1,24 +1,25 @@
-resource "kubernetes_deployment" "worker" {
+resource "kubernetes_deployment" "web" {
   metadata {
-    name        = "worker"
+    name        = "web"
     annotations = var.resource_tags
+    namespace   = var.codecov_namespace
   }
   spec {
-    replicas = var.worker_resources["replicas"]
+    replicas = var.web_resources["replicas"]
     selector {
       match_labels = {
-        app = "worker"
+        app = "web"
       }
     }
     template {
       metadata {
         labels = {
-          app = "worker"
+          app = "web"
         }
       }
       spec {
         node_selector = {
-          "kubernetes.io/role" = "worker"
+          "role" = "web"
         }
         service_account_name = kubernetes_service_account.codecov.metadata[0].name
         volume {
@@ -40,20 +41,28 @@ resource "kubernetes_deployment" "worker" {
           }
         }
         container {
-          name  = "workers"
-          image = "codecov/enterprise-worker:${var.codecov_version}"
-          args  = ["worker", "--queue celery,uploads", "--concurrency 1"]
-          env {
-            name = "STATSD_HOST"
-            value_from {
-              field_ref {
-                field_path = "status.hostIP"
+          name  = "web"
+          image = "codecov/enterprise-web:${var.codecov_version}"
+          port {
+            container_port = 5000
+          }
+          dynamic "env" {
+            for_each = var.statsd_enabled ? { host = true } : {}
+            content {
+              name = "STATSD_HOST"
+              value_from {
+                field_ref {
+                  field_path = "status.hostIP"
+                }
               }
             }
           }
-          env {
-            name  = "STATSD_PORT"
-            value = "8125"
+          dynamic "env" {
+            for_each = var.statsd_enabled ? { host = true } : {}
+            content {
+              name  = "STATSD_PORT"
+              value = "8125"
+            }
           }
           env {
             name  = "SERVICES__DATABASE_URL"
@@ -68,8 +77,12 @@ resource "kubernetes_deployment" "worker" {
             value = "s3.amazonaws.com"
           }
           env {
+            name  = "SERVICES__MINIO__PORT"
+            value = 443
+          }
+          env {
             name  = "SERVICES__MINIO__BUCKET"
-            value = aws_s3_bucket.minio.id
+            value = local.connection_strings.minio_bucket
           }
           env {
             name  = "SERVICES__MINIO__IAM_AUTH"
@@ -77,13 +90,21 @@ resource "kubernetes_deployment" "worker" {
           }
           resources {
             limits = {
-              cpu    = var.worker_resources["cpu_limit"]
-              memory = var.worker_resources["memory_limit"]
+              cpu    = var.web_resources["cpu_limit"]
+              memory = var.web_resources["memory_limit"]
             }
             requests = {
-              cpu    = var.worker_resources["cpu_request"]
-              memory = var.worker_resources["memory_request"]
+              cpu    = var.web_resources["cpu_request"]
+              memory = var.web_resources["memory_request"]
             }
+          }
+          readiness_probe {
+            http_get {
+              path = "/login"
+              port = "5000"
+            }
+            initial_delay_seconds = 5
+            period_seconds        = 5
           }
           image_pull_policy = "Always"
           volume_mount {
@@ -108,8 +129,29 @@ resource "kubernetes_deployment" "worker" {
         }
       }
     }
-    strategy {
-      type = "RollingUpdate"
+  }
+  lifecycle {
+    ignore_changes = [spec.0.template.0.spec.0.volume, spec.0.template.0.spec.0.container.0.volume_mount]
+  }
+  timeouts {
+    create = "300s"
+  }
+}
+
+resource "kubernetes_service" "web" {
+  metadata {
+    name        = "web"
+    annotations = var.resource_tags
+    namespace   = var.codecov_namespace
+  }
+  spec {
+    port {
+      protocol    = "TCP"
+      port        = "5000"
+      target_port = "5000"
+    }
+    selector = {
+      app = "web"
     }
   }
 }

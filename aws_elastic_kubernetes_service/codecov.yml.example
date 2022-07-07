@@ -7,11 +7,5 @@ github:
   client_id: "example-client-id"
   client_secret: "example-client-secret"
 
-# the following is required when using IAM auth with s3 to make the worker properly use IAM.
-services:
-  chosen_storage: "aws"
-  aws:
-    resource: s3
-
 #gitlab_enterprise:
 #  ssl_pem: /cert/scm_ca_cert.pem

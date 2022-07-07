@@ -8,5 +8,4 @@ github:
   client_secret: "client-secret"
 services:
   minio:
-    dsn: "https://codecov.yourdomain.com"
     hash_key: "ab164bf3f7d947f2a0681b215404873e" #do not edit

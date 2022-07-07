@@ -34,12 +34,12 @@ resource "kubernetes_service_account" "ingress" {
   }
 }
 resource "helm_release" "ingress" {
-  depends_on = [kubernetes_manifest.ingress-crd1, kubernetes_manifest.ingress-crd2]
+  depends_on       = [kubernetes_manifest.ingress-crd1, kubernetes_manifest.ingress-crd2]
   count            = var.ingress_enabled ? 1 : 0
   name             = "aws-load-balancer-controller"
   repository       = "https://aws.github.io/eks-charts"
   chart            = "aws-load-balancer-controller"
-  namespace = var.ingress_namespace
+  namespace        = var.ingress_namespace
   create_namespace = true
   set {
     name  = "serviceAccount.create"

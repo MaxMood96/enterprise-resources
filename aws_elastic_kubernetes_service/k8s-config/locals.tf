@@ -17,6 +17,14 @@ locals {
     "alb.ingress.kubernetes.io/healthcheck-port" = "traffic-port"
     "alb.ingress.kubernetes.io/listen-ports"     = "[{\"HTTP\": 80}]"
     "alb.ingress.kubernetes.io/backend-protocol" = "HTTP"
-    "alb.ingress.kubernetes.io/target-type": "ip"
+    "alb.ingress.kubernetes.io/target-type" : "ip"
   }, local.https_annotations)
+  minio_envs = {
+    SERVICES__MINIO__REGION = var.region
+    SERVICES__MINIO__PORT   = 443
+    #SERVICES__MINIO__IAM_AUTH   = false # we cannot use iam auth here because minio does not currently support aws metadata v2 service
+    SERVICES__MINIO__VERIFY_SSL = true
+    SERVICES__MINIO__BUCKET     = local.connection_strings.minio_bucket
+    SERVICES__MINIO__HOST       = "s3.amazonaws.com"
+  }
 }

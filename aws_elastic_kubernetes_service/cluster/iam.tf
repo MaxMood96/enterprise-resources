@@ -71,3 +71,17 @@ resource "aws_iam_role_policy_attachment" "ingress" {
   policy_arn = one(aws_iam_policy.ingress.*.arn)
   role       = one(aws_iam_role.ingress.*.name)
 }
+
+resource "aws_iam_access_key" "minio" {
+  user = aws_iam_user.minio.name
+}
+
+resource "aws_iam_user" "minio" {
+  name = "codecov-minio"
+  path = "/system/"
+}
+
+resource "aws_iam_user_policy_attachment" "minio" {
+  policy_arn = aws_iam_policy.minio-s3.arn
+  user       = aws_iam_user.minio.name
+}

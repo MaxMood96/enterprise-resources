@@ -41,13 +41,13 @@ resource "kubernetes_deployment" "worker" {
           }
         }
         container {
-          name  = "worker"
+          name = "worker"
           #command = ["sleep", "9000"]
           image = "codecov/enterprise-worker:${var.codecov_version}"
-#          security_context {
-#            run_as_user = 0
-#          }
-          args  = ["worker", "--queue celery,uploads", "--concurrency 1"]
+          #          security_context {
+          #            run_as_user = 0
+          #          }
+          args = ["worker", "--queue celery,uploads", "--concurrency 1"]
           dynamic "env" {
             for_each = var.statsd_enabled ? { host = true } : {}
             content {
@@ -74,17 +74,17 @@ resource "kubernetes_deployment" "worker" {
             name  = "SERVICES__REDIS_URL"
             value = local.redis_url
           }
-          env {
-            name  = "SERVICES__MINIO__HOST"
-            value = "s3.us-east-1.amazonaws.com"
+          dynamic "env" {
+            for_each = local.minio_envs
+            content {
+              name  = env.key
+              value = env.value
+            }
           }
-          env {
-            name  = "SERVICES__MINIO__PORT"
-            value = 443
-          }
-          env {
-            name  = "SERVICES__MINIO__BUCKET"
-            value = local.connection_strings.minio_bucket
+          env_from {
+            secret_ref {
+              name = kubernetes_secret.minio-creds.metadata.0.name
+            }
           }
           resources {
             limits = {

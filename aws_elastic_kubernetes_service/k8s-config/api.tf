@@ -74,21 +74,17 @@ resource "kubernetes_deployment" "api" {
             name  = "SERVICES__REDIS_URL"
             value = local.redis_url
           }
-          env {
-            name  = "SERVICES__MINIO__HOST"
-            value = "s3.amazonaws.com"
+          dynamic "env" {
+            for_each = local.minio_envs
+            content {
+              name  = env.key
+              value = env.value
+            }
           }
-          env {
-            name  = "SERVICES__MINIO__BUCKET"
-            value = local.connection_strings.minio_bucket
-          }
-          env {
-            name  = "SERVICES__MINIO__PORT"
-            value = 443
-          }
-          env {
-            name  = "SERVICES__MINIO__IAM_AUTH"
-            value = "true"
+          env_from {
+            secret_ref {
+              name = kubernetes_secret.minio-creds.metadata.0.name
+            }
           }
           resources {
             limits = {
@@ -102,7 +98,7 @@ resource "kubernetes_deployment" "api" {
           }
           readiness_probe {
             http_get {
-              path = "/health"
+              path = "/health/"
               port = "8000"
             }
             initial_delay_seconds = 5

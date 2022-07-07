@@ -90,6 +90,42 @@ resource "aws_security_group_rule" "eks-cluster-in" {
   type                     = "ingress"
 }
 
+resource "aws_security_group_rule" "eks-api-in" {
+  from_port                = 8000
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.eks.id
+  source_security_group_id = module.eks.cluster_security_group_id
+  to_port                  = 8000
+  type                     = "ingress"
+}
+
+resource "aws_security_group_rule" "eks-web-in" {
+  from_port                = 5000
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.eks.id
+  source_security_group_id = module.eks.cluster_security_group_id
+  to_port                  = 5000
+  type                     = "ingress"
+}
+
+resource "aws_security_group_rule" "eks-api-out" {
+  from_port                = 8000
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.eks.id
+  source_security_group_id = module.eks.cluster_security_group_id
+  to_port                  = 8000
+  type                     = "egress"
+}
+
+resource "aws_security_group_rule" "eks-web-out" {
+  from_port                = 5000
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.eks.id
+  source_security_group_id = module.eks.cluster_security_group_id
+  to_port                  = 5000
+  type                     = "egress"
+}
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 18"

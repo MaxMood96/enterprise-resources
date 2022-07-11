@@ -8,7 +8,7 @@ data "aws_availability_zones" "list" {
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> v2.0"
-  name    = "codecov-vpc"
+  name    = var.vpc_name
   cidr    = "10.0.16.0/20"
   azs = [
     data.aws_availability_zones.list.names[0],
@@ -29,6 +29,18 @@ module "vpc" {
   single_nat_gateway = true
   tags = merge({
     "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+    },
+    var.resource_tags
+  )
+  public_subnet_tags = merge({
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+    "kubernetes.io/role/elb"                    = 1
+    },
+    var.resource_tags
+  )
+  private_subnet_tags = merge({
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+    "kubernetes.io/role/internal-elb"           = 1
     },
     var.resource_tags
   )

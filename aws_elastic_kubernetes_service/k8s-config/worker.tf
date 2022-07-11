@@ -1,24 +1,25 @@
-resource "kubernetes_deployment" "web" {
+resource "kubernetes_deployment" "worker" {
   metadata {
-    name        = "web"
+    name        = "worker"
     annotations = var.resource_tags
+    namespace   = var.codecov_namespace
   }
   spec {
-    replicas = var.web_resources["replicas"]
+    replicas = var.worker_resources["replicas"]
     selector {
       match_labels = {
-        app = "web"
+        app = "worker"
       }
     }
     template {
       metadata {
         labels = {
-          app = "web"
+          app = "worker"
         }
       }
       spec {
         node_selector = {
-          "kubernetes.io/role" = "web"
+          "role" = "worker"
         }
         service_account_name = kubernetes_service_account.codecov.metadata[0].name
         volume {
@@ -40,22 +41,26 @@ resource "kubernetes_deployment" "web" {
           }
         }
         container {
-          name  = "web"
-          image = "codecov/enterprise-web:${var.codecov_version}"
-          port {
-            container_port = 5000
-          }
-          env {
-            name = "STATSD_HOST"
-            value_from {
-              field_ref {
-                field_path = "status.hostIP"
+          name = "worker"
+          image = "codecov/enterprise-worker:${var.codecov_version}"
+          args = ["worker", "--queue celery,uploads", "--concurrency 1"]
+          dynamic "env" {
+            for_each = var.statsd_enabled ? { host = true } : {}
+            content {
+              name = "STATSD_HOST"
+              value_from {
+                field_ref {
+                  field_path = "status.hostIP"
+                }
               }
             }
           }
-          env {
-            name  = "STATSD_PORT"
-            value = "8125"
+          dynamic "env" {
+            for_each = var.statsd_enabled ? { host = true } : {}
+            content {
+              name  = "STATSD_PORT"
+              value = "8125"
+            }
           }
           env {
             name  = "SERVICES__DATABASE_URL"
@@ -65,35 +70,27 @@ resource "kubernetes_deployment" "web" {
             name  = "SERVICES__REDIS_URL"
             value = local.redis_url
           }
-          env {
-            name  = "SERVICES__MINIO__HOST"
-            value = "s3.amazonaws.com"
+          dynamic "env" {
+            for_each = local.minio_envs
+            content {
+              name  = env.key
+              value = env.value
+            }
           }
-          env {
-            name  = "SERVICES__MINIO__BUCKET"
-            value = aws_s3_bucket.minio.id
-          }
-          env {
-            name  = "SERVICES__MINIO__IAM_AUTH"
-            value = "true"
+          env_from {
+            secret_ref {
+              name = kubernetes_secret.minio-creds.metadata.0.name
+            }
           }
           resources {
             limits = {
-              cpu    = var.web_resources["cpu_limit"]
-              memory = var.web_resources["memory_limit"]
+              cpu    = var.worker_resources["cpu_limit"]
+              memory = var.worker_resources["memory_limit"]
             }
             requests = {
-              cpu    = var.web_resources["cpu_request"]
-              memory = var.web_resources["memory_request"]
+              cpu    = var.worker_resources["cpu_request"]
+              memory = var.worker_resources["memory_request"]
             }
-          }
-          readiness_probe {
-            http_get {
-              path = "/login"
-              port = "5000"
-            }
-            initial_delay_seconds = 5
-            period_seconds        = 5
           }
           image_pull_policy = "Always"
           volume_mount {
@@ -118,22 +115,14 @@ resource "kubernetes_deployment" "web" {
         }
       }
     }
-  }
-}
-
-resource "kubernetes_service" "web" {
-  metadata {
-    name        = "web"
-    annotations = var.resource_tags
-  }
-  spec {
-    port {
-      protocol    = "TCP"
-      port        = "5000"
-      target_port = "5000"
+    strategy {
+      type = "RollingUpdate"
     }
-    selector = {
-      app = "web"
-    }
+  }
+  lifecycle {
+    ignore_changes = [spec.0.template.0.spec.0.volume, spec.0.template.0.spec.0.container.0.volume_mount]
+  }
+  timeouts {
+    create = "300s"
   }
 }

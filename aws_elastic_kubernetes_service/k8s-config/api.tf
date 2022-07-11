@@ -2,6 +2,7 @@ resource "kubernetes_deployment" "api" {
   metadata {
     name        = "api"
     annotations = var.resource_tags
+    namespace   = var.codecov_namespace
   }
   spec {
     replicas = var.api_resources["replicas"]
@@ -19,7 +20,7 @@ resource "kubernetes_deployment" "api" {
       spec {
         node_selector = {
           #Run the api pods on the web nodes as they are lightweight. This can be split out if needed.
-          "kubernetes.io/role" = "web"
+          "role" = "web"
         }
         service_account_name = kubernetes_service_account.codecov.metadata[0].name
         volume {
@@ -46,18 +47,25 @@ resource "kubernetes_deployment" "api" {
           port {
             container_port = 8000
           }
-          env {
-            name = "STATSD_HOST"
-            value_from {
-              field_ref {
-                field_path = "status.hostIP"
+          dynamic "env" {
+            for_each = var.statsd_enabled ? { host = true } : {}
+            content {
+              name = "STATSD_HOST"
+              value_from {
+                field_ref {
+                  field_path = "status.hostIP"
+                }
               }
             }
           }
-          env {
-            name  = "STATSD_PORT"
-            value = "8125"
+          dynamic "env" {
+            for_each = var.statsd_enabled ? { host = true } : {}
+            content {
+              name  = "STATSD_PORT"
+              value = "8125"
+            }
           }
+
           env {
             name  = "SERVICES__DATABASE_URL"
             value = local.postgres_url
@@ -65,6 +73,18 @@ resource "kubernetes_deployment" "api" {
           env {
             name  = "SERVICES__REDIS_URL"
             value = local.redis_url
+          }
+          dynamic "env" {
+            for_each = local.minio_envs
+            content {
+              name  = env.key
+              value = env.value
+            }
+          }
+          env_from {
+            secret_ref {
+              name = kubernetes_secret.minio-creds.metadata.0.name
+            }
           }
           resources {
             limits = {
@@ -78,7 +98,7 @@ resource "kubernetes_deployment" "api" {
           }
           readiness_probe {
             http_get {
-              path = "/health"
+              path = "/health/"
               port = "8000"
             }
             initial_delay_seconds = 5
@@ -108,12 +128,19 @@ resource "kubernetes_deployment" "api" {
       }
     }
   }
+  lifecycle {
+    ignore_changes = [spec.0.template.0.spec.0.volume, spec.0.template.0.spec.0.container.0.volume_mount]
+  }
+  timeouts {
+    create = "300s"
+  }
 }
 
 resource "kubernetes_service" "api" {
   metadata {
     name        = "api"
     annotations = var.resource_tags
+    namespace   = var.codecov_namespace
   }
   spec {
     port {

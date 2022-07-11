@@ -36,7 +36,7 @@ resource "random_string" "identifier-suffix" {
 resource "aws_db_instance" "postgres" {
   identifier                = "codecov-postgres-${random_string.identifier-suffix.result}"
   engine                    = "postgres"
-  engine_version            = "10.6"
+  engine_version            = var.postgres_version
   allocated_storage         = "20"
   storage_type              = "gp2"
   instance_class            = var.postgres_instance_class
@@ -78,7 +78,7 @@ resource "aws_elasticache_cluster" "redis" {
   engine             = "redis"
   node_type          = var.redis_node_type
   num_cache_nodes    = var.redis_num_nodes
-  engine_version     = "5.0.3"
+  engine_version     = var.elasticache_version
   subnet_group_name  = aws_elasticache_subnet_group.redis.name
   security_group_ids = [aws_security_group.elasticache.id]
 

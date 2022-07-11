@@ -1,6 +1,7 @@
 resource "aws_iam_policy" "minio-s3" {
   name   = "codecov-minio-s3"
   policy = data.aws_iam_policy_document.minio-s3.json
+  tags   = var.resource_tags
 }
 
 data "aws_iam_policy_document" "minio-s3" {
@@ -22,6 +23,7 @@ data "aws_iam_policy_document" "minio-s3" {
     effect = "Allow"
     actions = [
       "s3:ListBucket"
+
     ]
     resources = [
       aws_s3_bucket.minio.arn

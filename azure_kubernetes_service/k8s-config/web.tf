@@ -144,3 +144,32 @@ resource "kubernetes_service" "web" {
     }
   }
 }
+
+resource "kubernetes_service" "example" {
+  metadata {
+    name = "terraform-example"
+  }
+  spec {
+    selector = {
+      app = kubernetes_pod.example.metadata.0.labels.app
+    }
+    session_affinity = "ClientIP"
+    port {
+      port        = 8080
+      target_port = 80
+    }
+
+    type = "LoadBalancer"
+  }
+}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: public-svc
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: public-app

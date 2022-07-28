@@ -20,13 +20,13 @@ resource "kubernetes_deployment" "api" {
         volume {
           name = "codecov-yml"
           secret {
-            secret_name = kubernetes_secret.codecov-yml.metadata[0].name
+            secret_name = data.terraform_remote_state.cluster.outputs.codecov_name
           }
         }
         volume {
           name = "scm-ca-cert"
           secret {
-            secret_name = kubernetes_secret.scm-ca-cert.metadata[0].name
+            secret_name = data.terraform_remote_state.cluster.outputs.scm_ca_cert_name
           }
         }
         container {
@@ -35,31 +35,25 @@ resource "kubernetes_deployment" "api" {
           port {
             container_port = 5000
           }
-          env {
-            name = "STATSD_HOST"
-            value_from {
-              field_ref {
-                field_path = "status.hostIP"
+          dynamic "env" {
+            for_each = var.statsd_enabled ? { host = true } : {}
+            content {
+              name = "STATSD_HOST"
+              value_from {
+                field_ref {
+                  field_path = "status.hostIP"
+                }
               }
             }
           }
-          env {
-            name  = "STATSD_PORT"
-            value = "8125"
+          dynamic "env" {
+            for_each = var.statsd_enabled ? { host = true } : {}
+            content {
+              name  = "STATSD_PORT"
+              value = "8125"
+            }
           }
-          env {
-            name  = "DATABASE_USERNAME"
-            value = local.postgres_username
-          }
-          env {
-            name  = "DATABASE_PASSWORD"
-            value = local.postgres_password
-          }
-          env {
-            name  = "DATABASE_HOST"
-            value = local.postgres_host
-          }
-          env {
+         env {
             name  = "SERVICES__DATABASE_URL"
             value = local.postgres_url
           }

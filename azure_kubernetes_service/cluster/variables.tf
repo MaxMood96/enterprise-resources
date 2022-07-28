@@ -2,14 +2,16 @@ variable "location" {
   description = "The Azure Region in which all resources in this example should be provisioned"
   default     = "eastus"
 }
-/*
+
 variable "azurerm_client_id" {
   description = "Azure service principal client id to use for kubernetes cluster"
+  default = "$ARM_CLIENT_ID"
 }
 
 variable "azurerm_client_secret" {
   description = "Azure service principal client secret to use for kubernetes cluster"
-}*/
+  default = "$ARM_CLIENT_SECRET"
+}
 
 variable "codecov_version" {
   description = "Version of codecov enterprise to deploy"
@@ -78,17 +80,6 @@ variable "worker_resources" {
   }
 }
 
-variable "traefik_resources" {
-  type = map(any)
-  default = {
-    replicas       = 2
-    cpu_limit      = "500m"
-    memory_limit   = "512M"
-    cpu_request    = "50m"
-    memory_request = "64M"
-  }
-}
-
 variable "minio_resources" {
   type = map(any)
   default = {
@@ -99,11 +90,11 @@ variable "minio_resources" {
     memory_request = "64M"
   }
 }
-
+/*
 variable "enable_traefik" {
   description = "Whether or not to include Traefik ingress"
   default     = "1"
-}
+}*/
 
 variable "codecov_yml" {
   description = "Path to your codecov.yml"
@@ -112,6 +103,7 @@ variable "codecov_yml" {
 
 variable "ingress_host" {
   description = "Hostname used for http(s) ingress"
+  default = ""
 }
 
 variable "enable_https" {
@@ -131,6 +123,7 @@ variable "tls_cert" {
 
 variable "ssh_public_key" {
   description = "SSH key to install on k8s cluster instances"
+  default = "~/.ssh/id_rsa.pub"
 }
 
 variable "resource_tags" {

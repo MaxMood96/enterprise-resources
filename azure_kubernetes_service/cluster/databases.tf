@@ -1,7 +1,6 @@
-resource "random_password" "postgres-password" {
-  length           = "16"
-  special          = "true"
-  override_special = "!#$%^&*()"
+resource "random_string" "postgres-password" {
+  length  = "16"
+  special = "false"
 }
 
 resource "random_pet" "postgres-suffix" {}
@@ -18,9 +17,10 @@ resource "azurerm_postgresql_server" "codecov" {
   geo_redundant_backup_enabled = var.postgres_storage_profile["geo_redundant_backup_enabled"]
 
   administrator_login          = "codecov"
-  administrator_login_password = random_password.postgres-password.result
-  version                      = "9.6"
+  administrator_login_password = random_string.postgres-password.result
+  version                      = "11"
   ssl_enforcement_enabled      = "false"
+  ssl_minimal_tls_version_enforced = "TLSEnforcementDisabled"
 
   tags = var.resource_tags
 }

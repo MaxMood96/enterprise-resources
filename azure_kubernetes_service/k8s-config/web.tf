@@ -20,13 +20,13 @@ resource "kubernetes_deployment" "web" {
         volume {
           name = "codecov-yml"
           secret {
-            secret_name = kubernetes_secret.codecov-yml.metadata[0].name
+            secret_name = data.terraform_remote_state.cluster.outputs.codecov_name
           }
         }
         volume {
           name = "scm-ca-cert"
           secret {
-            secret_name = kubernetes_secret.scm-ca-cert.metadata[0].name
+            secret_name = data.terraform_remote_state.cluster.outputs.scm_ca_cert_name
           }
         }
         container {
@@ -35,29 +35,27 @@ resource "kubernetes_deployment" "web" {
           port {
             container_port = 5000
           }
-          env {
-            name = "STATSD_HOST"
-            value_from {
-              field_ref {
-                field_path = "status.hostIP"
+          dynamic "env" {
+            for_each = var.statsd_enabled ? { host = true } : {}
+            content {
+              name = "STATSD_HOST"
+              value_from {
+                field_ref {
+                  field_path = "status.hostIP"
+                }
               }
             }
           }
-          env {
-            name  = "STATSD_PORT"
-            value = "8125"
+          dynamic "env" {
+            for_each = var.statsd_enabled ? { host = true } : {}
+            content {
+              name  = "STATSD_PORT"
+              value = "8125"
+            }
           }
           env {
-            name  = "DATABASE_USERNAME"
-            value = local.postgres_username
-          }
-          env {
-            name  = "DATABASE_PASSWORD"
-            value = local.postgres_password
-          }
-          env {
-            name  = "DATABASE_HOST"
-            value = local.postgres_host
+            name  = "SERVICES__DATABASE_URL"
+            value = local.postgres_url
           }
           env {
             name  = "SERVICES__REDIS_URL"
@@ -75,7 +73,7 @@ resource "kubernetes_deployment" "web" {
             name = "SERVICES__MINIO__ACCESS_KEY_ID"
             value_from {
               secret_key_ref {
-                name = kubernetes_secret.minio-access-key.metadata.0.name
+                name = data.terraform_remote_state.cluster.outputs.minio_access_key_name
                 key  = "MINIO_ACCESS_KEY"
               }
             }
@@ -84,14 +82,14 @@ resource "kubernetes_deployment" "web" {
             name = "SERVICES__MINIO__SECRET_ACCESS_KEY"
             value_from {
               secret_key_ref {
-                name = kubernetes_secret.minio-secret-key.metadata.0.name
+                name = data.terraform_remote_state.cluster.outputs.minio_secret_key_name
                 key  = "MINIO_SECRET_KEY"
               }
             }
           }
           env {
             name  = "SERVICES__MINIO__BUCKET"
-            value = azurerm_storage_account.minio.name
+            value = data.terraform_remote_state.cluster.outputs.minio_name
           }
           resources {
             limits = {
@@ -145,31 +143,18 @@ resource "kubernetes_service" "web" {
   }
 }
 
-resource "kubernetes_service" "example" {
+resource "kubernetes_service" "web-external" {
   metadata {
-    name = "terraform-example"
+    name = "web-external"
   }
   spec {
     selector = {
-      app = kubernetes_pod.example.metadata.0.labels.app
+      app = "web"
     }
-    session_affinity = "ClientIP"
     port {
-      port        = 8080
-      target_port = 80
+      port        = 80
+      target_port = 5000
     }
-
     type = "LoadBalancer"
   }
 }
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: public-svc
-spec:
-  type: LoadBalancer
-  ports:
-  - port: 80
-  selector:
-    app: public-app

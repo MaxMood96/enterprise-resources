@@ -1,4 +1,4 @@
-resource "kubernetes_service_account" "traefik" {
+/*resource "kubernetes_service_account" "traefik" {
   metadata {
     name      = "codecov-traefik"
     namespace = "default"
@@ -54,4 +54,4 @@ resource "kubernetes_cluster_role_binding" "traefik" {
     name      = kubernetes_cluster_role.traefik.metadata[0].name
   }
 }
-
+*/

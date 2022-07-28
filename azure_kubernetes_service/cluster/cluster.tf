@@ -22,10 +22,14 @@ resource "azurerm_kubernetes_cluster" "codecov-enterprise" {
     vnet_subnet_id  = azurerm_subnet.codecov.id
   }
 
+  identity {
+    type = "SystemAssigned"
+  }
+/*
   service_principal {
     client_id     = var.azurerm_client_id
     client_secret = var.azurerm_client_secret
-  }
+  }*/
 
   network_profile {
     network_plugin = "azure"

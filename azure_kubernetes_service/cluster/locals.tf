@@ -1,4 +1,3 @@
 locals {
-  codecov_url= "https://aws.codecov-devops.com"
-
+  codecov_url = yamldecode(file(var.codecov_yml))
 }

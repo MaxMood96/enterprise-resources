@@ -53,7 +53,7 @@ resource "kubernetes_deployment" "api" {
               value = "8125"
             }
           }
-         env {
+          env {
             name  = "SERVICES__DATABASE_URL"
             value = local.postgres_url
           }

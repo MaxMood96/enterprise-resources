@@ -55,30 +55,28 @@ The terraform stack is configured using terraform variables which can be
 defined in a `terraform.tfvars` file.  More info on
 [Terraform input variables](https://www.terraform.io/docs/configuration/variables.html).
 
-| name | description | default |
-| --- | --- | --- |
-| `location` | Azure location | eastus |
-| `azurerm_client_id` | `appId` from the SP creation output | |
-| `azurerm_client_secret` | `password` from the SP creation output | |
-| `codecov_version` | Version of codecov enterprise to deploy* | latest-stable |
-| `cluster_name` | Azure Kubernetes Service (AKS) cluster name | default-codecov-cluster |
-| `node_pool_count` | Number of nodes to configure in the node pool | 5 |
-| `node_pool_vm_size` | VM size to use for node pool nodes | Standard_B2s |
-| `postgres_sku` | PostgreSQL SKU (instance size and type) | GP_Gen5_2 |
-| `postgres_storage_profile` | PostgreSQL size and type of disk storage | See `variables.tf` |
-| `web_resources` | Map of resources for web k8s deployment | See `variables.tf` |
-| `worker_resources` | Map of resources for worker k8s deployment | See `variables.tf` |
-| `minio_resources` | Map of resources for minio k8s deployment | See `variables.tf` |
-| `traefik_resources` | Map of resources for traefik k8s deployment | See `variables.tf` |
-| `enable_traefik` | Whether to include Traefik for ingress and HTTPS | 1 |
-| `codecov_yml` | Path to your codecov.yml | codecov.yml |
-| `ingress_host` | Hostname used for http(s) ingress | |
-| `enable_https` | Enables https ingress.  Requires TLS cert and key | 0 |
-| `tls_key` | Path to private key to use for TLS | required if enable_https=1 |
-| `tls_cert` | Path to certificate to use for TLS | required if enable_https=1 |
-| `ssh_public_key` | SSH public key path, used for the Kubernetes cluster | |
-| `resource_tags` | Map of tags to include in compatible resources | `{application=codecov, environment=test}` |
-| `scm_ca_cert` | Optional SCM CA certificate path in PEM format | |
+| name | description                                          | default                                                              |
+| --- |------------------------------------------------------|----------------------------------------------------------------------|
+| `location` | Azure location                                       | eastus            in cluster folder                                                  |
+| `azurerm_client_id` | `appId` from the SP creation output                  |             in cluster folder                    |
+| `azurerm_client_secret` | `password` from the SP creation output               |          in cluster folder                     |
+| `codecov_version` | Version of codecov enterprise to deploy*             | latest-stable                         |
+| `cluster_name` | Azure Kubernetes Service (AKS) cluster name          | default-codecov-cluster                  |
+| `node_pool_count` | Number of nodes to configure in the node pool        | 5                                     |
+| `node_pool_vm_size` | VM size to use for node pool nodes                   | Standard_B2s                                                         |
+| `postgres_sku` | PostgreSQL SKU (instance size and type)              | GP_Gen5_2                                                            |
+| `postgres_storage_profile` | PostgreSQL size and type of disk storage             | See `variables.tf`                                                   |
+| `web_resources` | Map of resources for web k8s deployment              | See `variables.tf` See `variables.tf` in cluster folder              |
+| `worker_resources` | Map of resources for worker k8s deployment           | See `variables.tf`        in cluster folder                           |
+| `minio_resources` | Map of resources for minio k8s deployment            | See `variables.tf`         in cluster folder                         |
+| `codecov_yml` | Path to your codecov.yml                             | see codecov.yml                                                      |
+| `enable_certmanager` | enables letsencrypt certificates                     | See `variables.tf` in k8s-config folder                              |
+| `enable_external_tls`  | enables use of local certificate                     | See `variables.tf` in k8s-config folder                              |
+| `tls_key` | Path to private key to use for TLS                   | required if external_tls=1  See `variables.tf` in k8s-config folder  |
+| `tls_cert` | Path to certificate to use for TLS                   | required if external_tls=1   See `variables.tf` in k8s-config folder |
+| `ssh_public_key` | SSH public key path, used for the Kubernetes cluster |                                                                      |
+| `resource_tags` | Map of tags to include in compatible resources       | `{application=codecov, environment=test}`                            |
+| `scm_ca_cert` | Optional SCM CA certificate path in PEM format       |                                                                      |
 \* Specifying a codecov_version is recommended and requires the format `v$VERSION` e.g. `v4.5.8`
 
 ### `scm_ca_cert`
@@ -93,16 +91,6 @@ The default node pool VM size and number of instances are the minimum to get
 the Codecov application up and running.  Tuning these will be required,
 dependent on your specific use-case.
 
-### Traefik
-
-Traefik is included for ingress in order to support HTTPS, streamline the setup, 
-and make this stack as turn-key as possible.  It can be excluded in favor of 
-using GCP services to manage your domain and certificate.  To disable Traefik,
-include this in your `terraform.tfvars` file:
-
-```
-enable_traefik = 0
-```
 
 ### Granting Codecov access to internal resources
 
@@ -114,18 +102,19 @@ will originate from this address.
 ## Executing terraform
 
 After configuring `codecov.yml` and `terraform.tfvars` you are ready to execute
-terraform and create the stack following these steps:
+terraform in first the cluster folder and then in the k8s-config folder which will create 
+the stack following these steps:
 
 1. Run `terraform init`.  This will download the necessary provider modules and
    prepare your terraform environment for execution.  [Terraform
    init](https://www.terraform.io/docs/commands/init.html)
-1. Create a plan: `terraform plan -out=plan.out`.  This checks the current
+2. Create a plan: `terraform plan -out=plan.out`.  This checks the current
    state and saves an execution plan to `plan.out`.  [Terraform
    plan](https://www.terraform.io/docs/commands/plan.html)
-1. If you're satisfied with the execution plan, apply it.  `terraform apply
+3. If you're satisfied with the execution plan, apply it.  `terraform apply
    plan.out`.  This will begin creating your stack.  [Terraform
    apply](https://www.terraform.io/docs/commands/apply.html)
-1. Wait... this will take a little while.  If everything goes well, you will
+4. Wait... this will take a little while.  If everything goes well, you will
    see something like this:
      ```
      [...]
@@ -135,9 +124,10 @@ terraform and create the stack following these steps:
      
      ingress-lb-ip = xxx.xxx.xxx.xxx
      ```
-1. The ingress IP and minio API keys are output at the end of the run.
+5. The ingress IP and minio API keys are output at the end of the run.
    Create a DNS A record for the `ingress_host` above pointing at the
-   resulting `ingress-lb-ip`.
+   resulting `ingress-lb-ip`. If you are using the certmanager feature the dns record needs created
+    before the certificate is issued
 
 ## Destroying
 

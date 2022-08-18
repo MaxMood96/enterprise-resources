@@ -5,14 +5,6 @@ variable "resource_tags" {
     environment = "test"
   }
 }
-variable "codecov_yml" {
-  description = "Path to your codecov.yml"
-  default     = "codecov.yml"
-}
-variable "scm_ca_cert" {
-  description = "SCM CA certificate path"
-  default     = ""
-}
 
 variable "api_resources" {
   type = map(any)
@@ -51,6 +43,24 @@ variable "codecov_version" {
   default     = "latest-stable"
 }
 variable "statsd_enabled" {
-  type = bool
+  type    = bool
   default = false
+}
+
+variable "enable_certmanager" {
+  description = "enables lets encrypt and creates certificate request based off codecov url in codecov.yml file"
+  default     = "1"
+}
+variable "enable_external_tls" {
+  description = "use if you have your own certificate and input tls_key and tls_cert"
+  default     = "0"
+}
+variable "tls_key" {
+  description = "Path to private key to use for TLS"
+  default     = ""
+}
+
+variable "tls_cert" {
+  description = "Path to certificate to use for TLS"
+  default     = ""
 }

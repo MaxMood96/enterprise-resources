@@ -143,18 +143,3 @@ resource "kubernetes_service" "web" {
   }
 }
 
-resource "kubernetes_service" "web-external" {
-  metadata {
-    name = "web-external"
-  }
-  spec {
-    selector = {
-      app = "web"
-    }
-    port {
-      port        = 80
-      target_port = 5000
-    }
-    type = "LoadBalancer"
-  }
-}

@@ -25,7 +25,7 @@ resource "azurerm_kubernetes_cluster" "codecov-enterprise" {
   identity {
     type = "SystemAssigned"
   }
-/*
+  /*
   service_principal {
     client_id     = var.azurerm_client_id
     client_secret = var.azurerm_client_secret

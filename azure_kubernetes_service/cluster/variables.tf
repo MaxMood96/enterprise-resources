@@ -5,12 +5,12 @@ variable "location" {
 
 variable "azurerm_client_id" {
   description = "Azure service principal client id to use for kubernetes cluster"
-  default = "$ARM_CLIENT_ID"
+  default     = "$ARM_CLIENT_ID"
 }
 
 variable "azurerm_client_secret" {
   description = "Azure service principal client secret to use for kubernetes cluster"
-  default = "$ARM_CLIENT_SECRET"
+  default     = "$ARM_CLIENT_SECRET"
 }
 
 variable "codecov_version" {
@@ -47,39 +47,6 @@ variable "postgres_storage_profile" {
   }
 }
 
-variable "web_resources" {
-  type = map(any)
-  default = {
-    replicas       = 2
-    cpu_limit      = "1000m"
-    memory_limit   = "2048M"
-    cpu_request    = "150m"
-    memory_request = "128M"
-  }
-}
-
-variable "api_resources" {
-  type = map(any)
-  default = {
-    replicas       = 2
-    cpu_limit      = "1000m"
-    memory_limit   = "2048M"
-    cpu_request    = "250m"
-    memory_request = "256M"
-  }
-}
-
-variable "worker_resources" {
-  type = map(any)
-  default = {
-    replicas       = 2
-    cpu_limit      = "3000m"
-    memory_limit   = "1024M"
-    cpu_request    = "500m"
-    memory_request = "1024M"
-  }
-}
-
 variable "minio_resources" {
   type = map(any)
   default = {
@@ -90,40 +57,17 @@ variable "minio_resources" {
     memory_request = "64M"
   }
 }
-/*
-variable "enable_traefik" {
-  description = "Whether or not to include Traefik ingress"
-  default     = "1"
-}*/
+
 
 variable "codecov_yml" {
   description = "Path to your codecov.yml"
   default     = "codecov.yml"
 }
 
-variable "ingress_host" {
-  description = "Hostname used for http(s) ingress"
-  default = ""
-}
-
-variable "enable_https" {
-  description = "Enables https ingress.  Requires TLS cert and key"
-  default     = "0"
-}
-
-variable "tls_key" {
-  description = "Path to private key to use for TLS"
-  default     = ""
-}
-
-variable "tls_cert" {
-  description = "Path to certificate to use for TLS"
-  default     = ""
-}
 
 variable "ssh_public_key" {
   description = "SSH key to install on k8s cluster instances"
-  default = "~/.ssh/id_rsa.pub"
+  default     = "~/.ssh/id_rsa.pub"
 }
 
 variable "resource_tags" {

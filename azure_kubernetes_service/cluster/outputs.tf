@@ -2,7 +2,7 @@ output "postgres_username" {
   value = azurerm_postgresql_server.codecov.administrator_login
 }
 output "postgres_pw" {
-  value = azurerm_postgresql_server.codecov.administrator_login_password
+  value     = azurerm_postgresql_server.codecov.administrator_login_password
   sensitive = true
 }
 output "postgres_server_name" {
@@ -36,21 +36,22 @@ output "minio_name" {
 }
 
 output "kubeconfig_host" {
-  value = azurerm_kubernetes_cluster.codecov-enterprise.kube_config[0].host
+  value     = azurerm_kubernetes_cluster.codecov-enterprise.kube_config[0].host
   sensitive = true
 }
 output "kubeconfig_cluster_ca_certificate" {
-  value = azurerm_kubernetes_cluster.codecov-enterprise.kube_config[0].cluster_ca_certificate
+  value     = azurerm_kubernetes_cluster.codecov-enterprise.kube_config[0].cluster_ca_certificate
   sensitive = true
 }
 output "kubeconfig_client_certificate" {
-  value = azurerm_kubernetes_cluster.codecov-enterprise.kube_config[0].client_certificate
+  value     = azurerm_kubernetes_cluster.codecov-enterprise.kube_config[0].client_certificate
   sensitive = true
 }
 output "kubeconfig_client_key" {
-  value = azurerm_kubernetes_cluster.codecov-enterprise.kube_config[0].client_key
+  value     = azurerm_kubernetes_cluster.codecov-enterprise.kube_config[0].client_key
   sensitive = true
 }
-output "keyvault_name" {
-  value = azurerm_key_vault.kv.name
+
+output "codecov_url" {
+  value = trimprefix(local.codecov_url["setup"]["codecov_url"], ("https://"))
 }

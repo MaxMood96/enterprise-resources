@@ -3,6 +3,16 @@ variable "region" {
   default     = "us-east-1"
 }
 
+variable "route53_region" {
+  description = "AWS region"
+  default     = "us-east-1"
+}
+
+variable "route53_profile" {
+  description = "AWS profile to use for connecting to route53"
+  default     = ""
+}
+
 variable "codecov_version" {
   description = "Version of codecov enterprise to deploy"
   default     = "latest-stable"
@@ -134,4 +144,27 @@ variable "statsd_enabled" {
 variable "vpc_name" {
   description = "The name of the vpc that was created. This must match the vpc_name var in cluster template"
   default     = "codecov-vpc"
+}
+
+variable "management_users" {
+  type        = list(string)
+  default     = []
+  description = "List of IAM users to allow access to the cluster. This will likely be needed if the user you run terraform as is not the user you use for the AWS console."
+}
+
+variable "manage_aws_auth_configmap" {
+  description = "Determines whether to manage the aws-auth configmap"
+  type        = bool
+  default     = false
+}
+
+variable "create_aws_auth_configmap" {
+  description = "Determines whether to create the aws-auth configmap. NOTE - this is only intended for scenarios where the configmap does not exist (i.e. - when using only self-managed node groups). Most users should use `manage_aws_auth_configmap`"
+  type        = bool
+  default     = false
+}
+
+variable "metrics_enabled" {
+  type    = bool
+  default = true
 }

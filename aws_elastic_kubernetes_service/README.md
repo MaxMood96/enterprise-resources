@@ -26,8 +26,6 @@ for a fully robust deployment.
   user](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html).
 - Attach the [AdministratorAccess
   policy](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html#jf_administrator) to your newly created user.
-  A log of IAM permissions used during the stack creation can be found in
-  [iam_permissions.txt](iam_permissions.txt).
 - [Create access
   keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html?icmpid=docs_iam_console)
   for your IAM user.
@@ -72,14 +70,7 @@ terraform and create the stack following these steps:
 3. If you're satisfied with the execution plan, apply it.  `terraform apply
    plan.out`.  This will begin creating your stack.  [Terraform
    apply](https://www.terraform.io/docs/commands/apply.html)
-4. Due to limitations of the current version of Terraform, the `apply` will
-   likely encounter an error when attempting to create kubernetes resources.
-   This is due to a race condition between the EKS module and the kubernetes
-   provider.  Repeating the `plan`, then `apply` procedure above will complete
-   creation of the kubernetes resources. 
-   * Cluster template only only: Due to an open bug with the EKS module, 
-      `terraform apply -target aws_iam_policy.minio-s3` will need to be ran prior to the main apply working.
-5. Wait... this will take a little while.  If everything goes well, you will
+4. Wait... this will take a little while.  If everything goes well, you will
    see something like this:
      ```
      [...]

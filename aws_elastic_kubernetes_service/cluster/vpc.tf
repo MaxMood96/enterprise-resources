@@ -2,9 +2,6 @@
 # This creates a VPC for the Codecov Enterprise deployment and associated
 # resources.
 
-data "aws_availability_zones" "list" {
-}
-
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> v2.0"
@@ -44,9 +41,4 @@ module "vpc" {
     },
     var.resource_tags
   )
-}
-
-# Include NAT gateway public IP(s) in output if required for firewall rules / access restrictions
-output "nat_gateway_ips" {
-  value = module.vpc.nat_public_ips
 }

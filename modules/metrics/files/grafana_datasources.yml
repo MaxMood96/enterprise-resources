@@ -1,0 +1,12 @@
+apiVersion: 1
+
+datasources:
+- name: Prometheus
+  type: prometheus
+  url: http://prometheus:9090/prometheus
+  basicAuth: true
+  basicAuthUser: ${prom_user}
+  editable: true
+  isDefault: true
+  secureJsonData:
+    basicAuthPassword: '${prom_pw}'

@@ -41,11 +41,11 @@ resource "kubernetes_deployment" "worker" {
           }
         }
         container {
-          name = "worker"
+          name  = "worker"
           image = "codecov/enterprise-worker:${var.codecov_version}"
-          args = ["worker", "--queue celery,uploads", "--concurrency 1"]
+          args  = ["worker", "--queue celery,uploads", "--concurrency 1"]
           dynamic "env" {
-            for_each = var.statsd_enabled ? { host = true } : {}
+            for_each = var.statsd_enabled || var.metrics_enabled ? { host = true } : {}
             content {
               name = "STATSD_HOST"
               value_from {
@@ -56,7 +56,7 @@ resource "kubernetes_deployment" "worker" {
             }
           }
           dynamic "env" {
-            for_each = var.statsd_enabled ? { host = true } : {}
+            for_each = var.statsd_enabled || var.metrics_enabled ? { host = true } : {}
             content {
               name  = "STATSD_PORT"
               value = "8125"

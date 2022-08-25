@@ -15,7 +15,7 @@ locals {
       labels = {
         "role" = "web"
       }
-      iam_role_additional_policies = [aws_iam_policy.minio-s3.id]
+      iam_role_additional_policies = []
       vpc_security_group_ids       = [aws_security_group.eks.id]
       launch_template_name         = "web"
       eni_delete                   = "true"
@@ -36,7 +36,7 @@ locals {
       desired_size                 = var.worker_nodes
       max_size                     = var.worker_nodes * 2
       instance_types               = [var.worker_node_type]
-      iam_role_additional_policies = [aws_iam_policy.minio-s3.id]
+      iam_role_additional_policies = []
       vpc_security_group_ids       = [aws_security_group.eks.id]
       launch_template_name         = "worker"
       labels = {
@@ -137,6 +137,9 @@ module "eks" {
     vpc-cni = {
       resolve_conflicts = "OVERWRITE"
     }
+    aws-ebs-csi-driver = {
+      service_account_role_arn = aws_iam_role.codecov-ebs-csi.arn
+    }
   }
   cluster_name                          = var.cluster_name
   subnet_ids                            = module.vpc.private_subnets
@@ -146,5 +149,11 @@ module "eks" {
   cluster_additional_security_group_ids = [aws_security_group.eks.id]
   create_iam_role                       = true
   tags                                  = var.resource_tags
+}
+
+resource "aws_iam_role_policy_attachment" "minio" {
+  for_each   = module.eks.eks_managed_node_groups
+  role       = each.value.iam_role_name
+  policy_arn = aws_iam_policy.minio-s3.arn
 }
 

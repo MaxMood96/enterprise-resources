@@ -83,7 +83,8 @@ terraform and create the stack following these steps:
 
 * The ingress hostname are output at the end of the k8s-config run. If you have `dns_enabled=true`, then you should have working dns. If not: 
    Create a DNS CNAME record for the `ingress_host` above pointing at the
-   resulting `iingress_hostname`.  
+   resulting `ingress_hostname`.  
+* You can specify the `route53_region` and `route53_profile` to use a different aws config for route53 activities.
 
 ## Destroying
 
@@ -101,3 +102,8 @@ Practices](https://www.terraform.io/docs/enterprise/guides/recommended-practices
 
 Please review Codecov [Self-hosted Best
 Practices](https://docs.codecov.io/docs/best-practices) as well.
+
+## Metrics
+
+By default, this template will deploy a metrics stack (grafana/statsd/prometheus) to monitor Codecov. If using the ALB ingress controller from this template then these will be available at `CODECOV_URL/grafana`, `CODECOV_URL/prometheus`.
+

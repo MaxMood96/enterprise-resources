@@ -152,18 +152,6 @@ variable "management_users" {
   description = "List of IAM users to allow access to the cluster. This will likely be needed if the user you run terraform as is not the user you use for the AWS console."
 }
 
-variable "manage_aws_auth_configmap" {
-  description = "Determines whether to manage the aws-auth configmap"
-  type        = bool
-  default     = false
-}
-
-variable "create_aws_auth_configmap" {
-  description = "Determines whether to create the aws-auth configmap. NOTE - this is only intended for scenarios where the configmap does not exist (i.e. - when using only self-managed node groups). Most users should use `manage_aws_auth_configmap`"
-  type        = bool
-  default     = false
-}
-
 variable "metrics_enabled" {
   type    = bool
   default = true

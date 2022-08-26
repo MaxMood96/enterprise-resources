@@ -95,6 +95,7 @@ It is recommended to let this template handle DNS for you. If your DNS is hosted
 ```terraform
 #Set this in both cluster and k8s-config.
 dns_enabled=true
+hosted_zone_id=ID_FROM_ROUTE_53
 ```
 This will do ACM cert validation for you in addition to creating a record for Codecov for the `ingress_host` that you specify.
 

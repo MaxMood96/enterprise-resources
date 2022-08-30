@@ -105,7 +105,7 @@ the stack following these steps:
 ## DNS
 It is recommended to let this template handle DNS for you. If your DNS is hosted in Azure, all you need to do is:
 ```terraform
-#Set this in both cluster and k8s-config.
+#Set this in k8s-config.
 dns_enabled=true
 dns_zone=NAME_OF_ZONE_IN_AZURE
 domain=ROOT_DNS_ZONE # eg example.com if you want dns set to codecov.example.com

@@ -61,7 +61,7 @@ output "egress-ip" {
 # write out a .kubeconfig for kubectl
 resource "local_file" "kubeconfig" {
   content  = azurerm_kubernetes_cluster.codecov-enterprise.kube_config_raw
-  filename = "${path.module}/.kubeconfig"
+  filename = "${path.module}/../.kubeconfig"
 }
 
 

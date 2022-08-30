@@ -1,6 +1,6 @@
-resource "kubernetes_manifest" "letsencryptclusterissuer" {
-  count = var.enable_certmanager ? 1 : 0
-  manifest = {
+resource "kubectl_manifest" "letsencryptclusterissuer" {
+  count = var.enable_certmanager && var.ingress_enabled ? 1 : 0
+  yaml_body = yamlencode({
     apiVersion = "cert-manager.io/v1"
     kind       = "ClusterIssuer"
     metadata = {
@@ -8,9 +8,9 @@ resource "kubernetes_manifest" "letsencryptclusterissuer" {
     }
     spec = {
       acme = {
-        server         = "https://acme-v02.api.letsencrypt.org/directory"
+        server         = var.letsencrypt_server
         preferredChain = "ISRG Root X1"
-        email          = "jason.ford01@gmail.com"
+        email          = var.letsencrypt_email
         privateKeySecretRef = {
           name = "letsencrypt"
         }
@@ -28,23 +28,24 @@ resource "kubernetes_manifest" "letsencryptclusterissuer" {
         }]
       }
     }
-  }
+  })
+  depends_on = [helm_release.cm]
 }
-resource "kubernetes_manifest" "letsencryptissuer" {
-  count = var.enable_certmanager ? 1 : 0
-  manifest = {
+resource "kubectl_manifest" "letsencryptissuer" {
+  count = var.enable_certmanager && var.ingress_enabled ? 1 : 0
+  yaml_body = yamlencode({
     apiVersion = "cert-manager.io/v1"
     kind       = "Issuer"
     metadata = {
       name      = "letsencrypt-prod"
-      namespace = "default"
+      namespace = var.namespace
     }
     spec = {
       acme = {
         # The ACME server URL
-        server = "https://acme-v02.api.letsencrypt.org/directory"
+        server = var.letsencrypt_server
         # Email address used for ACME registration
-        email = "jason.ford01@gmail.com"
+        email = var.letsencrypt_email
         # Name of a secret used to store the ACME account private key
         privateKeySecretRef = {
           name = "letsencrypt-prod"
@@ -61,20 +62,21 @@ resource "kubernetes_manifest" "letsencryptissuer" {
         ]
       }
     }
-  }
+  })
+  depends_on = [helm_release.cm]
 }
-resource "kubernetes_manifest" "letsencryptcert" {
-  count = var.enable_certmanager ? 1 : 0
-  manifest = {
+resource "kubectl_manifest" "letsencryptcert" {
+  count = var.enable_certmanager && var.ingress_enabled ? 1 : 0
+  yaml_body = yamlencode({
     apiVersion = "cert-manager.io/v1"
     kind : "Certificate"
     metadata = {
-      name      = "acme-crt"
-      namespace = "default"
+      name      = "codecov-crt"
+      namespace = var.namespace
     }
     spec = {
       secretName = "codecov-cert"
-      dnsNames   = [data.terraform_remote_state.cluster.outputs.codecov_url]
+      dnsNames   = [local.codecov_url]
 
       issuerRef = {
         name = "letsencrypt-prod"
@@ -84,19 +86,43 @@ resource "kubernetes_manifest" "letsencryptcert" {
         group = "cert-manager.io"
       }
     }
-  }
+  })
+  depends_on = [helm_release.cm]
+}
+resource "kubectl_manifest" "letsencryptcertminio" {
+  count = var.enable_certmanager && var.ingress_enabled ? 1 : 0
+  yaml_body = yamlencode({
+    apiVersion = "cert-manager.io/v1"
+    kind : "Certificate"
+    metadata = {
+      name      = "minio-crt"
+      namespace = var.namespace
+    }
+    spec = {
+      secretName = "minio-cert"
+      dnsNames   = [local.minio_domain]
+
+      issuerRef = {
+        name = "letsencrypt-prod"
+        # We can reference ClusterIssuers by changing the kind here.
+        # The default value is Issuer (i.e. a locally namespaced Issuer)
+        kind  = "Issuer"
+        group = "cert-manager.io"
+      }
+    }
+  })
+  depends_on = [helm_release.cm]
 }
 resource "kubernetes_secret_v1" "tls-secret" {
   count = var.enable_external_tls ? 1 : 0
   metadata {
     name      = "tls-cert"
-    namespace = "default"
+    namespace = var.namespace
   }
   type = "tls"
   data = {
     "tls.crt" = var.tls_cert
     "tls.key" = var.tls_key
   }
-
 }
 

@@ -19,13 +19,14 @@ for a fully robust deployment.
   tool.
 - Log in with the Azure cli tool: `az login`
 - Create an Active Directory service principal:
-    ```
+    ```shell
+    SUBSCRIPTION_ID=$(az account show | grep id | cut -d ':' -f 2 | tr -d '",')
     az ad sp create-for-rbac --role="Contributor" \
         --scopes="/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     ```
   Save the output of this command, these credentials will be needed to
   configure the Azure provider and Kubernetes cluster.
-- Export the following variables using your `~/.bash_profile` or a tool
+- Export the following variables using your `~/.bash_profile`/`~/.zprofile` or a tool
   like [direnv](https://direnv.net/).  After the kubernetes cluster is
   created, a .kubeconfig file will be created in the current directory for use
   with `kubectl`.  For more information, see [Configuring the Service Principal in
@@ -55,35 +56,7 @@ The terraform stack is configured using terraform variables which can be
 defined in a `terraform.tfvars` file.  More info on
 [Terraform input variables](https://www.terraform.io/docs/configuration/variables.html).
 
-| name | description                                          | default                                                              |
-| --- |------------------------------------------------------|----------------------------------------------------------------------|
-| `location` | Azure location                                       | eastus            in cluster folder                                                  |
-| `azurerm_client_id` | `appId` from the SP creation output                  |             in cluster folder                    |
-| `azurerm_client_secret` | `password` from the SP creation output               |          in cluster folder                     |
-| `codecov_version` | Version of codecov enterprise to deploy*             | latest-stable                         |
-| `cluster_name` | Azure Kubernetes Service (AKS) cluster name          | default-codecov-cluster                  |
-| `node_pool_count` | Number of nodes to configure in the node pool        | 5                                     |
-| `node_pool_vm_size` | VM size to use for node pool nodes                   | Standard_B2s                                                         |
-| `postgres_sku` | PostgreSQL SKU (instance size and type)              | GP_Gen5_2                                                            |
-| `postgres_storage_profile` | PostgreSQL size and type of disk storage             | See `variables.tf`                                                   |
-| `web_resources` | Map of resources for web k8s deployment              | See `variables.tf` See `variables.tf` in cluster folder              |
-| `worker_resources` | Map of resources for worker k8s deployment           | See `variables.tf`        in cluster folder                           |
-| `minio_resources` | Map of resources for minio k8s deployment            | See `variables.tf`         in cluster folder                         |
-| `codecov_yml` | Path to your codecov.yml                             | see codecov.yml                                                      |
-| `enable_certmanager` | enables letsencrypt certificates                     | See `variables.tf` in k8s-config folder                              |
-| `enable_external_tls`  | enables use of local certificate                     | See `variables.tf` in k8s-config folder                              |
-| `tls_key` | Path to private key to use for TLS                   | required if external_tls=1  See `variables.tf` in k8s-config folder  |
-| `tls_cert` | Path to certificate to use for TLS                   | required if external_tls=1   See `variables.tf` in k8s-config folder |
-| `ssh_public_key` | SSH public key path, used for the Kubernetes cluster |                                                                      |
-| `resource_tags` | Map of tags to include in compatible resources       | `{application=codecov, environment=test}`                            |
-| `scm_ca_cert` | Optional SCM CA certificate path in PEM format       |                                                                      |
-\* Specifying a codecov_version is recommended and requires the format `v$VERSION` e.g. `v4.5.8`
-
-### `scm_ca_cert`
-
-If `scm_ca_cert` is configured, it will be available to Codecov at
-`/cert/scm_ca_cert.pem`.  Include this path in your `codecov.yml` in the scm
-config.
+Detailed variable options are presented in each sub template readme.
 
 ### Instance Types
 
@@ -125,9 +98,19 @@ the stack following these steps:
      ingress-lb-ip = xxx.xxx.xxx.xxx
      ```
 5. The ingress IP and minio API keys are output at the end of the run.
-   Create a DNS A record for the `ingress_host` above pointing at the
+   If you are manageing your own dns: Create a DNS A record for the `ingress_host` and `minio_host` pointing at the
    resulting `ingress-lb-ip`. If you are using the certmanager feature the dns record needs created
-    before the certificate is issued
+    before the certificate will be successfully issued
+
+## DNS
+It is recommended to let this template handle DNS for you. If your DNS is hosted in Azure, all you need to do is:
+```terraform
+#Set this in both cluster and k8s-config.
+dns_enabled=true
+dns_zone=NAME_OF_ZONE_IN_AZURE
+domain=ROOT_DNS_ZONE # eg example.com if you want dns set to codecov.example.com
+```
+This template will create a minio dns record as well in the format `minio.${domain}` with the domain from the variables above. If you choose to manage your own dns, this still will need to be set and the minio record created.
 
 ## Destroying
 

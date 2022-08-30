@@ -1,5 +1,6 @@
 
 resource "helm_release" "nginx" {
+  count      = var.ingress_enabled ? 1 : 0
   chart      = "ingress-nginx"
   name       = "ingress-nginx"
   repository = "https://kubernetes.github.io/ingress-nginx"

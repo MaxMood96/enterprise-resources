@@ -47,24 +47,6 @@ variable "postgres_storage_profile" {
   }
 }
 
-variable "minio_resources" {
-  type = map(any)
-  default = {
-    replicas       = 2
-    cpu_limit      = "256m"
-    memory_limit   = "512M"
-    cpu_request    = "32m"
-    memory_request = "64M"
-  }
-}
-
-
-variable "codecov_yml" {
-  description = "Path to your codecov.yml"
-  default     = "codecov.yml"
-}
-
-
 variable "ssh_public_key" {
   description = "SSH key to install on k8s cluster instances"
   default     = "~/.ssh/id_rsa.pub"
@@ -76,10 +58,4 @@ variable "resource_tags" {
     application = "codecov"
     environment = "test"
   }
-}
-
-# 
-variable "scm_ca_cert" {
-  description = "SCM CA certificate path"
-  default     = ""
 }

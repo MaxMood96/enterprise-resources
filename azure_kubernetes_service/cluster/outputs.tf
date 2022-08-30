@@ -17,19 +17,10 @@ output "redis_hostname" {
 output "redis_port" {
   value = azurerm_redis_cache.codecov.port
 }
-output "minio_access_key_name" {
-  value = kubernetes_secret.minio-access-key.metadata.0.name
 
-}
-output "scm_ca_cert_name" {
-  value = kubernetes_secret.scm-ca-cert.metadata[0].name
-}
-output "minio_secret_key_name" {
-  value = kubernetes_secret.minio-secret-key.metadata.0.name
-
-}
-output "codecov_name" {
-  value = kubernetes_secret.codecov-yml.metadata[0].name
+output "minio_primary_access_key" {
+  sensitive = true
+  value     = azurerm_storage_account.minio.primary_access_key
 }
 output "minio_name" {
   value = azurerm_storage_account.minio.name
@@ -52,6 +43,3 @@ output "kubeconfig_client_key" {
   sensitive = true
 }
 
-output "codecov_url" {
-  value = trimprefix(local.codecov_url["setup"]["codecov_url"], ("https://"))
-}

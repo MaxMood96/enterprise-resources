@@ -2,6 +2,7 @@ resource "kubernetes_deployment" "web" {
   metadata {
     name        = "web"
     annotations = var.resource_tags
+    namespace   = local.namespace
   }
   spec {
     replicas = var.web_resources["replicas"]
@@ -20,13 +21,16 @@ resource "kubernetes_deployment" "web" {
         volume {
           name = "codecov-yml"
           secret {
-            secret_name = data.terraform_remote_state.cluster.outputs.codecov_name
+            secret_name = kubernetes_secret.codecov-yml.metadata.0.name
           }
         }
-        volume {
-          name = "scm-ca-cert"
-          secret {
-            secret_name = data.terraform_remote_state.cluster.outputs.scm_ca_cert_name
+        dynamic "volume" {
+          for_each = var.extra_secret_volumes
+          content {
+            name = volume.key
+            secret {
+              secret_name = kubernetes_secret.extra[volume.key].metadata.0.name
+            }
           }
         }
         container {
@@ -53,43 +57,24 @@ resource "kubernetes_deployment" "web" {
               value = "8125"
             }
           }
-          env {
-            name  = "SERVICES__DATABASE_URL"
-            value = local.postgres_url
-          }
-          env {
-            name  = "SERVICES__REDIS_URL"
-            value = local.redis_url
-          }
-          env {
-            name  = "SERVICES__MINIO__HOST"
-            value = "minio"
-          }
-          env {
-            name  = "SERVICES__MINIO__PORT"
-            value = "9000"
-          }
-          env {
-            name = "SERVICES__MINIO__ACCESS_KEY_ID"
-            value_from {
-              secret_key_ref {
-                name = data.terraform_remote_state.cluster.outputs.minio_access_key_name
-                key  = "MINIO_ACCESS_KEY"
-              }
+          dynamic "env" {
+            for_each = local.common_env
+            content {
+              name  = env.key
+              value = env.value
             }
           }
-          env {
-            name = "SERVICES__MINIO__SECRET_ACCESS_KEY"
-            value_from {
-              secret_key_ref {
-                name = data.terraform_remote_state.cluster.outputs.minio_secret_key_name
-                key  = "MINIO_SECRET_KEY"
+          dynamic "env" {
+            for_each = local.common_secret_env
+            content {
+              name = env.key
+              value_from {
+                secret_key_ref {
+                  name = env.value.secret
+                  key  = env.value.key
+                }
               }
             }
-          }
-          env {
-            name  = "SERVICES__MINIO__BUCKET"
-            value = data.terraform_remote_state.cluster.outputs.minio_name
           }
           resources {
             limits = {
@@ -115,10 +100,13 @@ resource "kubernetes_deployment" "web" {
             read_only  = "true"
             mount_path = "/config"
           }
-          volume_mount {
-            name       = "scm-ca-cert"
-            read_only  = "true"
-            mount_path = "/cert"
+          dynamic "volume_mount" {
+            for_each = var.extra_secret_volumes
+            content {
+              name       = volume_mount.key
+              read_only  = lookup(volume_mount.value, "read_only", "true")
+              mount_path = volume_mount.value.mount_path
+            }
           }
         }
       }
@@ -130,6 +118,7 @@ resource "kubernetes_service" "web" {
   metadata {
     name        = "web"
     annotations = var.resource_tags
+    namespace   = local.namespace
   }
   spec {
     port {

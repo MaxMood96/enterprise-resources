@@ -3,6 +3,16 @@ variable "region" {
   default     = "us-east-1"
 }
 
+variable "route53_region" {
+  description = "AWS region"
+  default     = "us-east-1"
+}
+
+variable "route53_profile" {
+  description = "AWS profile to use for connecting to route53"
+  default     = ""
+}
+
 variable "codecov_version" {
   description = "Version of codecov enterprise to deploy"
   default     = "latest-stable"
@@ -134,4 +144,15 @@ variable "statsd_enabled" {
 variable "vpc_name" {
   description = "The name of the vpc that was created. This must match the vpc_name var in cluster template"
   default     = "codecov-vpc"
+}
+
+variable "management_users" {
+  type        = list(string)
+  default     = []
+  description = "List of IAM users to allow access to the cluster. This will likely be needed if the user you run terraform as is not the user you use for the AWS console."
+}
+
+variable "metrics_enabled" {
+  type    = bool
+  default = true
 }

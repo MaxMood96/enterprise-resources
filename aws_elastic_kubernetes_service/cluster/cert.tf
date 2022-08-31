@@ -8,6 +8,6 @@ module "cert" {
   validate                  = true
   providers = {
     aws         = aws
-    aws.route53 = aws
+    aws.route53 = aws.route53
   }
 }

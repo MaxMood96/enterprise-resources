@@ -3,7 +3,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.5.0
-  creationTimestamp: null
   name: ingressclassparams.elbv2.k8s.aws
 spec:
   group: elbv2.k8s.aws

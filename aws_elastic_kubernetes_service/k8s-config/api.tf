@@ -48,7 +48,7 @@ resource "kubernetes_deployment" "api" {
             container_port = 8000
           }
           dynamic "env" {
-            for_each = var.statsd_enabled ? { host = true } : {}
+            for_each = var.statsd_enabled || var.metrics_enabled ? { host = true } : {}
             content {
               name = "STATSD_HOST"
               value_from {
@@ -59,7 +59,7 @@ resource "kubernetes_deployment" "api" {
             }
           }
           dynamic "env" {
-            for_each = var.statsd_enabled ? { host = true } : {}
+            for_each = var.statsd_enabled || var.metrics_enabled ? { host = true } : {}
             content {
               name  = "STATSD_PORT"
               value = "8125"

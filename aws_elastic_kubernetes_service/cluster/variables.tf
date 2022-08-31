@@ -3,6 +3,16 @@ variable "region" {
   default     = "us-east-1"
 }
 
+variable "route53_region" {
+  description = "AWS region"
+  default     = "us-east-1"
+}
+
+variable "route53_profile" {
+  description = "AWS profile to use for connecting to route53"
+  default     = ""
+}
+
 variable "codecov_version" {
   description = "Version of codecov enterprise to deploy"
   default     = "latest-stable"

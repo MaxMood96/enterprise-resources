@@ -6,4 +6,5 @@ resource "aws_route53_record" "record" {
   ttl             = 60
   type            = "CNAME"
   zone_id         = var.hosted_zone_id
+  provider        = aws.route53
 }

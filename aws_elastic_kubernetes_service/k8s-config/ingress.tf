@@ -53,10 +53,15 @@ resource "helm_release" "ingress" {
     name  = "clusterName"
     value = var.cluster_name
   }
+  set {
+    name  = "image.repository"
+    value = "${local.registries[var.region]}/amazon/aws-load-balancer-controller"
+  }
 }
 
 resource "kubernetes_ingress_v1" "ingress" {
   count = var.ingress_enabled ? 1 : 0
+  wait_for_load_balancer = true
   metadata {
     name        = "codecov-ingress"
     namespace   = var.codecov_namespace
@@ -66,6 +71,20 @@ resource "kubernetes_ingress_v1" "ingress" {
     rule {
       host = var.ingress_host
       http {
+        dynamic "path" {
+          content {
+            path = path.value.path
+            backend {
+              service {
+                name = path.value.service
+                port {
+                  number = path.value.port
+                }
+              }
+            }
+          }
+          for_each = local.metrics_paths
+        }
         path {
           path = "/"
           backend {
@@ -77,11 +96,6 @@ resource "kubernetes_ingress_v1" "ingress" {
             }
           }
         }
-      }
-    }
-    rule {
-      host = var.ingress_host
-      http {
         path {
           path = "/*"
           backend {
@@ -100,7 +114,6 @@ resource "kubernetes_ingress_v1" "ingress" {
 }
 #https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/deploy/installation/#summary
 #https://github.com/aws/eks-charts/blob/master/stable/aws-load-balancer-controller/crds/crds.yaml
-#open bug: https://github.com/hashicorp/terraform-provider-kubernetes/issues/1652 this will need to update on every run. This is "fine".
 resource "kubernetes_manifest" "ingress-crd1" {
   count    = var.ingress_enabled ? 1 : 0
   manifest = yamldecode(file("crds/1.yaml"))

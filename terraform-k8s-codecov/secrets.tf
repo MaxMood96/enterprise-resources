@@ -4,7 +4,7 @@ resource "kubernetes_secret" "codecov-yml" {
     annotations = var.resource_tags
   }
   data = {
-    "codecov.yml" = file(var.codecov_yml)
+    "codecov.yml" = var.codecov_yml_file
   }
 }
 

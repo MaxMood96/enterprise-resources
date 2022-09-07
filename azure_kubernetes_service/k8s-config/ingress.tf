@@ -35,7 +35,7 @@ resource "kubernetes_ingress_v1" "ingress" {
           path = "/"
           backend {
             service {
-              name = kubernetes_service.web.metadata.0.name
+              name = module.codecov.web_name
               port {
                 number = 5000
               }

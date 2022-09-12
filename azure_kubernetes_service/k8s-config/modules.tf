@@ -10,4 +10,8 @@ module "codecov" {
   common_env = local.common_env
   common_secret_env = local.common_secret_env
   codecov_yml_file = file(var.codecov_yml)
+  enable_certmanager = var.enable_certmanager
+  ingress_enabled = var.ingress_enabled
+  letsencrypt_email = "jason.ford01@gmail.com"
+  minio_name = kubernetes_service.minio.metadata.0.name
 }

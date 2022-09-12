@@ -29,5 +29,5 @@ locals {
       key    = "MINIO_SECRET_KEY"
     }
   }
-  lb_ip = var.ingress_enabled ? kubernetes_ingress_v1.ingress[0].status[0]["load_balancer"][0]["ingress"][0]["ip"] : ""
+  lb_ip = var.ingress_enabled ? module.codecov.lb_ip : ""
 }

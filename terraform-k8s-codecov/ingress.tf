@@ -35,7 +35,7 @@ resource "kubernetes_ingress_v1" "ingress" {
           path = "/"
           backend {
             service {
-              name = module.codecov.web_name
+              name = kubernetes_service.web.metadata.0.name
               port {
                 number = 5000
               }
@@ -51,7 +51,7 @@ resource "kubernetes_ingress_v1" "ingress" {
           path = "/"
           backend {
             service {
-              name = kubernetes_service.minio.metadata.0.name
+              name = var.minio_name
               port {
                 number = 9000
               }

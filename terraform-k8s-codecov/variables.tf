@@ -139,3 +139,39 @@ variable "common_secret_env" {
 variable "codecov_yml_file" {
   type = any
 }
+variable "enable_certmanager" {
+  description = "enables lets encrypt and creates certificate request based off codecov url in codecov.yml file"
+  default     = "1"
+}
+variable "enable_external_tls" {
+  description = "use if you have your own certificate and input tls_key and tls_cert"
+  default     = "0"
+}
+variable "ingress_enabled" {
+  default     = true
+  type        = bool
+  description = "Deploy nginx ingress?"
+}
+variable "letsencrypt_server" {
+  type    = string
+  default = "https://acme-v02.api.letsencrypt.org/directory"
+}
+
+variable "letsencrypt_email" {
+  type        = string
+  description = "Email to use with letsencrypt. This is required if enable_certmanager is enabled"
+  default     = ""
+}
+
+variable "tls_key" {
+  description = "Path to private key to use for TLS"
+  default     = ""
+}
+
+variable "tls_cert" {
+  description = "Path to certificate to use for TLS"
+  default     = ""
+}
+variable "minio_name" {
+  default = ""
+}

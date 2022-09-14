@@ -175,3 +175,6 @@ variable "tls_cert" {
 variable "minio_name" {
   default = ""
 }
+variable "minio" {
+  default = "false"
+}

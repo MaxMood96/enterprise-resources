@@ -9,6 +9,7 @@ locals {
     codecov_url         = trimprefix(local.codecov_yaml["setup"]["codecov_url"], ("https://"))
     enable_certmanager  = var.enable_certmanager ? { run = true } : {}
     enable_external_tls = var.enable_external_tls ? { run = true } : {}
+    minio = var.minio ? { run = true } : {}
     minio_domain =  var.minio_domain
     common_env = var.common_env
     common_secret_env = var.common_secret_env

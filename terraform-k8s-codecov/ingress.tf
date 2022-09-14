@@ -44,16 +44,19 @@ resource "kubernetes_ingress_v1" "ingress" {
         }
       }
     }
-    rule {
-      host = local.minio_domain
-      http {
-        path {
-          path = "/"
-          backend {
-            service {
-              name = var.minio_name
-              port {
-                number = 9000
+    dynamic rule {
+      for_each = local.minio
+      content {
+        host = local.minio_domain
+        http {
+          path {
+            path = "/"
+            backend {
+              service {
+                name = var.minio_name
+                port {
+                  number = 9000
+                }
               }
             }
           }

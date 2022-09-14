@@ -162,3 +162,7 @@ variable "enable_certmanager" {
   description = "enables lets encrypt and creates certificate request based off codecov url in codecov.yml file"
   default     = "1"
 }
+variable "minio" {
+  description = "required for azure"
+  default = false
+}

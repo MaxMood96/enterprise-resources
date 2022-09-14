@@ -12,6 +12,7 @@ module "codecov" {
   codecov_yml_file = file(var.codecov_yml)
   enable_certmanager = var.enable_certmanager
   ingress_enabled = var.ingress_enabled
-  letsencrypt_email = ""
+  letsencrypt_email = var.letsencrypt_email
   minio_name = kubernetes_service.minio.metadata.0.name
+  minio = true
 }

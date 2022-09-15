@@ -97,7 +97,7 @@ resource "kubectl_manifest" "letsencryptcertminio" {
     kind : "Certificate"
     metadata = {
       name      = "minio-crt"
-      namespace = var.namespace
+      namespace = local.namespace
     }
     spec = {
       secretName = "minio-cert"
@@ -118,7 +118,7 @@ resource "kubernetes_secret_v1" "tls-secret" {
   count = var.enable_external_tls ? 1 : 0
   metadata {
     name      = "tls-cert"
-    namespace = var.namespace
+    namespace = local.namespace
   }
   type = "tls"
   data = {

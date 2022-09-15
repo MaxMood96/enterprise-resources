@@ -130,22 +130,24 @@ variable "redis_url" {
 variable "minio_domain" {
   type = string
 }
-variable "common_env" {
+/*variable "common_env" {
   type = map
+  default = ""
 }
 variable "common_secret_env" {
   type = map
-}
+  default = ""
+}*/
 variable "codecov_yml_file" {
   type = any
 }
 variable "enable_certmanager" {
   description = "enables lets encrypt and creates certificate request based off codecov url in codecov.yml file"
-  default     = "1"
+  default     = false
 }
 variable "enable_external_tls" {
   description = "use if you have your own certificate and input tls_key and tls_cert"
-  default     = "0"
+  default     = false
 }
 variable "ingress_enabled" {
   default     = true
@@ -174,7 +176,13 @@ variable "tls_cert" {
 }
 variable "minio_name" {
   default = ""
+  type    = string
 }
 variable "minio" {
-  default = "false"
+  default = false
+  type    = string
+}
+variable "minio_primary_access_key" {
+  default = ""
+  type    = string
 }

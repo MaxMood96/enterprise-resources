@@ -37,7 +37,7 @@ resource "kubernetes_deployment" "api" {
           name  = "api"
           image = "codecov/enterprise-api:${var.codecov_version}"
           port {
-            container_port = 5000
+            container_port = 800
           }
           dynamic "env" {
             for_each = var.statsd_enabled ? { host = true } : {}

@@ -118,7 +118,7 @@ resource "kubernetes_service" "api" {
   metadata {
     name        = "api"
     annotations = var.resource_tags
-    namespace   = var.namespace
+    namespace   = local.namespace
   }
   spec {
     port {

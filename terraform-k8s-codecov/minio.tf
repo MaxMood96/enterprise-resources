@@ -1,4 +1,5 @@
 resource "kubernetes_deployment" "minio_storage" {
+  count = var.minio ? 1 : 0
   metadata {
     name      = "minio"
     namespace = local.namespace
@@ -28,7 +29,7 @@ resource "kubernetes_deployment" "minio_storage" {
             name = "MINIO_ACCESS_KEY"
             value_from {
               secret_key_ref {
-                name = module.codecov.minio_secrets_name
+                name = kubernetes_secret.minio-secrets[0].metadata[0].name
                 key  = "MINIO_ACCESS_KEY"
               }
             }
@@ -37,7 +38,7 @@ resource "kubernetes_deployment" "minio_storage" {
             name = "MINIO_SECRET_KEY"
             value_from {
               secret_key_ref {
-                name = module.codecov.minio_secrets_name
+                name = kubernetes_secret.minio-secrets[0].metadata[0].name
                 key  = "MINIO_SECRET_KEY"
               }
             }
@@ -78,6 +79,7 @@ resource "kubernetes_deployment" "minio_storage" {
 }
 
 resource "kubernetes_service" "minio" {
+  count = var.minio ? 1 : 0
   metadata {
     name      = "minio"
     namespace = local.namespace

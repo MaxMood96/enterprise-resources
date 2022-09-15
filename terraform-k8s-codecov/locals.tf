@@ -5,7 +5,7 @@ locals {
   postgres_host       = var.postgres_host
   redis_url           = var.redis_url
   namespace           = var.namespace
-  codecov_yaml        = yamldecode(file(var.codecov_yml_file))
+  codecov_yaml        = yamldecode(file("${path.root}/${var.codecov_yml_file}"))
   codecov_url         = trimprefix(local.codecov_yaml["setup"]["codecov_url"], ("https://"))
   enable_certmanager  = var.enable_certmanager ? { run = true } : {}
   enable_external_tls = var.enable_external_tls ? { run = true } : {}
@@ -20,7 +20,7 @@ locals {
     SERVICES__MINIO__PORT       = "443"
     SERVICES__MINIO__BUCKET     = var.minio_name
   }
-  common_secret_env = {
+  common_secret_env = var.minio_secret ? {
     SERVICES__MINIO__ACCESS_KEY_ID = {
       secret = kubernetes_secret.minio-secrets[0].metadata.0.name
       key    = "MINIO_ACCESS_KEY"
@@ -29,5 +29,5 @@ locals {
       secret = kubernetes_secret.minio-secrets[0].metadata.0.name
       key    = "MINIO_SECRET_KEY"
     }
-  }
+  } : {}
 }

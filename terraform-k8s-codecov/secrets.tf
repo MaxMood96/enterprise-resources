@@ -34,7 +34,7 @@ resource "kubernetes_secret" "extra" {
 }
 
 resource "kubernetes_secret" "minio-secrets" {
-  count = var.minio ? 1 : 0
+  count = var.minio_secret ? 1 : 0
   metadata {
     name      = "minio-secrets"
     namespace = local.namespace

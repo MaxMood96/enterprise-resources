@@ -140,6 +140,7 @@ variable "common_secret_env" {
 }*/
 variable "codecov_yml_file" {
   type = any
+  default = "../codecov.yml"
 }
 variable "enable_certmanager" {
   description = "enables lets encrypt and creates certificate request based off codecov url in codecov.yml file"
@@ -185,4 +186,7 @@ variable "minio" {
 variable "minio_primary_access_key" {
   default = ""
   type    = string
+}
+variable "minio_secret" {
+  default = false
 }

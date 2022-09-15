@@ -5,6 +5,7 @@ resource "kubectl_manifest" "letsencryptclusterissuer" {
     kind       = "ClusterIssuer"
     metadata = {
       name = "letsencrypt"
+
     }
     spec = {
       acme = {
@@ -72,7 +73,7 @@ resource "kubectl_manifest" "letsencryptcert" {
     kind : "Certificate"
     metadata = {
       name      = "codecov-crt"
-      namespace = var.namespace
+      namespace = local.namespace
     }
     spec = {
       secretName = "codecov-cert"

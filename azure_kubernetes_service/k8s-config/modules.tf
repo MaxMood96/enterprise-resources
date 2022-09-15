@@ -10,7 +10,8 @@ module "codecov" {
   enable_certmanager       = var.enable_certmanager
   ingress_enabled          = var.ingress_enabled
   letsencrypt_email        = var.letsencrypt_email
-  minio_name               = kubernetes_service.minio.metadata.0.name
-  minio                    = true
+  minio                    = var.minio
+  minio_secret            = var.minio_secrets
+  minio_name              = data.terraform_remote_state.cluster.outputs.minio_name
   minio_primary_access_key = data.terraform_remote_state.cluster.outputs.minio_primary_access_key
 }

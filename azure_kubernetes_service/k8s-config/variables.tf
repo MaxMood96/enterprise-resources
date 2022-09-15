@@ -47,7 +47,7 @@ variable "tls_cert" {
 
 variable "codecov_yml" {
   description = "Path to your codecov.yml"
-  default     = "codecov.yml"
+  default     = "../../codecov.yml"
 }
 
 // Example extra volume for GH App pem
@@ -132,4 +132,8 @@ variable "enable_certmanager" {
 variable "minio" {
   description = "required for azure"
   default     = true
+}
+variable "minio_secrets" {
+  description = "if you want to use k8s secrets for minio"
+  default = true
 }

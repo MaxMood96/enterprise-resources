@@ -6,10 +6,8 @@ locals {
   redis_url           = "redis://${data.terraform_remote_state.cluster.outputs.redis_hostname}:${data.terraform_remote_state.cluster.outputs.redis_port}"
   enable_certmanager  = var.enable_certmanager ? { run = true } : {}
   enable_external_tls = var.enable_external_tls ? { run = true } : {}
-  codecov_yaml        = yamldecode(file(var.codecov_yml))
-  codecov_url         = trimprefix(local.codecov_yaml["setup"]["codecov_url"], ("https://"))
   namespace           = var.namespace == "default" ? var.namespace : module.codecov.namespace_name
-  tld                 = split(".", local.codecov_url)[0]
+  tld                 = split(".", module.codecov.ingress_host)[0]
   minio_domain        = "minio.${var.domain}"
   lb_ip               = var.ingress_enabled ? module.codecov.lb_ip : ""
 }

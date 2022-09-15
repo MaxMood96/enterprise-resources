@@ -6,7 +6,7 @@ module "codecov" {
   postgres_host            = local.postgres_host
   redis_url                = local.redis_url
   minio_domain             = local.minio_domain
-  codecov_yml_file         = file(var.codecov_yml)
+  codecov_yml_file         = var.codecov_yml
   enable_certmanager       = var.enable_certmanager
   ingress_enabled          = var.ingress_enabled
   letsencrypt_email        = var.letsencrypt_email

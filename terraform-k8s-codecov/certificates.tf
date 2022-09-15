@@ -1,5 +1,5 @@
 resource "kubectl_manifest" "letsencryptclusterissuer" {
-  count = var.enable_certmanager && var.ingress_enabled && var.minio ? 1 : 0
+  count = var.enable_certmanager && var.ingress_enabled ? 1 : 0
   yaml_body = yamlencode({
     apiVersion = "cert-manager.io/v1"
     kind       = "ClusterIssuer"
@@ -90,7 +90,7 @@ resource "kubectl_manifest" "letsencryptcert" {
   depends_on = [helm_release.cm]
 }
 resource "kubectl_manifest" "letsencryptcertminio" {
-  count = var.enable_certmanager && var.ingress_enabled ? 1 : 0
+  count = var.enable_certmanager && var.ingress_enabled && var.minio ? 1 : 0
   yaml_body = yamlencode({
     apiVersion = "cert-manager.io/v1"
     kind : "Certificate"

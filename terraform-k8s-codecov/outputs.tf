@@ -16,3 +16,6 @@ output "namespace_name" {
 output "minio_secrets_name" {
   value = kubernetes_secret.minio-secrets[0].metadata[0].name
 }
+output "codecov_url" {
+  value = local.codecov_url
+}

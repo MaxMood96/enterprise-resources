@@ -5,5 +5,5 @@ output "lb_ip" {
   value = module.codecov.lb_ip
 }
 output "dns" {
-  value = local.codecov_url
+  value = module.codecov.ingress_host
 }

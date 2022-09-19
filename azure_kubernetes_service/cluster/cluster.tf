@@ -22,10 +22,14 @@ resource "azurerm_kubernetes_cluster" "codecov-enterprise" {
     vnet_subnet_id  = azurerm_subnet.codecov.id
   }
 
+  identity {
+    type = "SystemAssigned"
+  }
+  /*
   service_principal {
     client_id     = var.azurerm_client_id
     client_secret = var.azurerm_client_secret
-  }
+  }*/
 
   network_profile {
     network_plugin = "azure"
@@ -57,7 +61,7 @@ output "egress-ip" {
 # write out a .kubeconfig for kubectl
 resource "local_file" "kubeconfig" {
   content  = azurerm_kubernetes_cluster.codecov-enterprise.kube_config_raw
-  filename = "${path.module}/.kubeconfig"
+  filename = "${path.module}/../.kubeconfig"
 }
 
 

@@ -1,37 +1,8 @@
-resource "random_id" "minio-bucket-suffix" {
-  byte_length = "2"
-}
-
-resource "azurerm_storage_account" "minio" {
-  name                     = "codecov${random_id.minio-bucket-suffix.hex}"
-  resource_group_name      = azurerm_resource_group.codecov-enterprise.name
-  account_kind             = "BlobStorage"
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  location                 = var.location
-}
-
-resource "kubernetes_secret" "minio-access-key" {
-  metadata {
-    name = "minio-access-key"
-  }
-  data = {
-    MINIO_ACCESS_KEY = azurerm_storage_account.minio.name
-  }
-}
-
-resource "kubernetes_secret" "minio-secret-key" {
-  metadata {
-    name = "minio-secret-key"
-  }
-  data = {
-    MINIO_SECRET_KEY = azurerm_storage_account.minio.primary_access_key
-  }
-}
-
 resource "kubernetes_deployment" "minio_storage" {
+  count = var.minio ? 1 : 0
   metadata {
-    name = "minio"
+    name      = "minio"
+    namespace = local.namespace
   }
   spec {
     replicas = var.minio_resources["replicas"]
@@ -58,7 +29,7 @@ resource "kubernetes_deployment" "minio_storage" {
             name = "MINIO_ACCESS_KEY"
             value_from {
               secret_key_ref {
-                name = kubernetes_secret.minio-access-key.metadata[0].name
+                name = kubernetes_secret.minio-secrets[0].metadata[0].name
                 key  = "MINIO_ACCESS_KEY"
               }
             }
@@ -67,7 +38,7 @@ resource "kubernetes_deployment" "minio_storage" {
             name = "MINIO_SECRET_KEY"
             value_from {
               secret_key_ref {
-                name = kubernetes_secret.minio-secret-key.metadata[0].name
+                name = kubernetes_secret.minio-secrets[0].metadata[0].name
                 key  = "MINIO_SECRET_KEY"
               }
             }
@@ -108,8 +79,10 @@ resource "kubernetes_deployment" "minio_storage" {
 }
 
 resource "kubernetes_service" "minio" {
+  count = var.minio ? 1 : 0
   metadata {
-    name = "minio"
+    name      = "minio"
+    namespace = local.namespace
   }
   spec {
     port {

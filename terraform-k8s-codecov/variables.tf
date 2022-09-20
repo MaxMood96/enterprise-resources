@@ -111,24 +111,26 @@ variable "statsd_enabled" {
   type    = bool
   default = false
 }
-variable "postgres_username" {
+/*variable "postgres_username" {
   type = string
-}
+}*/
 variable "postgres_url" {
   type = string
 }
+/*
 variable "postgres_password" {
   type = string
 }
 variable "postgres_host" {
   type = string
-}
+}*/
 variable "redis_url" {
   type = string
 }
 
 variable "minio_domain" {
   type = string
+  default = ""
 }
 /*variable "common_env" {
   type = map
@@ -188,5 +190,8 @@ variable "minio_primary_access_key" {
   type    = string
 }
 variable "minio_secret" {
+  default = false
+}
+variable "enable_aws_minio_env_run_as" {
   default = false
 }

@@ -76,6 +76,14 @@ resource "kubernetes_deployment" "web" {
               }
             }
           }
+          dynamic "env_from" {
+            for_each = local.enable_aws_minio_env_run_as
+            content {
+              secret_ref {
+                name = "minio-creds"
+              }
+            }
+          }
           resources {
             limits = {
               cpu    = var.web_resources["cpu_limit"]

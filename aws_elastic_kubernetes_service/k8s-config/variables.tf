@@ -58,7 +58,7 @@ variable "worker_resources" {
 
 variable "codecov_yml" {
   description = "Path to your codecov.yml"
-  default     = "codecov.yml"
+  default     = "../../codecov.yml"
 }
 
 variable "ingress_host" {

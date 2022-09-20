@@ -1,4 +1,4 @@
-resource "kubernetes_secret" "codecov-yml" {
+/*resource "kubernetes_secret" "codecov-yml" {
   metadata {
     name        = "codecov-yml"
     annotations = var.resource_tags
@@ -19,7 +19,7 @@ resource "kubernetes_secret" "scm-ca-cert" {
     "scm_ca_cert.pem" = var.scm_ca_cert != "" ? file(var.scm_ca_cert) : ""
   }
 }
-
+*/
 resource "kubernetes_secret" "minio-creds" {
   metadata {
     name        = "minio-creds"
@@ -34,3 +34,4 @@ resource "kubernetes_secret" "minio-creds" {
     SERVICES__AWS__AWS_SECRET_ACCESS_KEY = local.connection_strings.minio_secret_key
   }
 }
+

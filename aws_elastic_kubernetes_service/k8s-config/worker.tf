@@ -1,4 +1,4 @@
-resource "kubernetes_deployment" "worker" {
+/*resource "kubernetes_deployment" "worker" {
   metadata {
     name        = "worker"
     annotations = var.resource_tags
@@ -126,3 +126,4 @@ resource "kubernetes_deployment" "worker" {
     create = "300s"
   }
 }
+*/

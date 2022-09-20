@@ -6,8 +6,8 @@ data "aws_availability_zones" "list" {}
 
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
-  name = "codecov-vpc"
-  cidr = "10.0.16.0/20"
+  name   = "codecov-vpc"
+  cidr   = "10.0.16.0/20"
   azs = [
     "${data.aws_availability_zones.list.names[0]}",
     "${data.aws_availability_zones.list.names[1]}",
@@ -31,7 +31,7 @@ module "vpc" {
 }
 
 output "vpc_id" {
-  value = "${module.vpc.vpc_id}"
+  value = module.vpc.vpc_id
 }
 
 output "vpc_private_subnet_ids" {
@@ -43,5 +43,5 @@ output "postgres_url" {
 }
 
 output "s3_bucket" {
-  value = "${aws_s3_bucket.minio.id}"
+  value = aws_s3_bucket.minio.id
 }

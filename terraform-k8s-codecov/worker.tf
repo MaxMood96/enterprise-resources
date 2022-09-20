@@ -33,6 +33,7 @@ resource "kubernetes_deployment" "worker" {
             }
           }
         }
+        service_account_name = kubernetes_service_account.codecov.metadata.0.name
         container {
           name  = "worker"
           image = "codecov/enterprise-worker:${var.codecov_version}"
@@ -63,7 +64,7 @@ resource "kubernetes_deployment" "worker" {
             }
           }
           dynamic "env" {
-            for_each = local.common_secret_env
+            for_each = local.secret_env
             content {
               name = env.key
               value_from {
@@ -71,14 +72,6 @@ resource "kubernetes_deployment" "worker" {
                   name = env.value.secret
                   key  = env.value.key
                 }
-              }
-            }
-          }
-          dynamic "env_from" {
-            for_each = local.enable_aws_minio_env_run_as
-            content {
-              secret_ref {
-                name = "minio-creds"
               }
             }
           }

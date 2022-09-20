@@ -3,27 +3,10 @@ variable "codecov_version" {
   default     = "latest-stable"
 }
 
-variable "web_replicas" {
-  description = "Number of web replicas to deploy"
-  default     = "2"
-}
-
-variable "api_replicas" {
-  description = "Number of api replicas to deploy"
-  default     = "2"
-}
-
-variable "worker_replicas" {
-  description = "Number of worker replicas to deploy"
-  default     = "2"
-}
-
-
 variable "resource_tags" {
   type = map(any)
   default = {
     application = "codecov"
-    environment = "test"
   }
 }
 
@@ -70,15 +53,19 @@ variable "minio_resources" {
   }
 }
 
-# 
-variable "scm_ca_cert" {
-  description = "SCM CA certificate path"
-  default     = ""
-}
 variable "namespace" {
   type    = string
   default = "codecov"
 }
+variable "extra_env" {
+  default     = {}
+  description = "Map of extra environment variables to add"
+}
+variable "extra_secret_env" {
+  default     = {}
+  description = "Map of extra environment variables to add as a secret and them source from the secret"
+}
+
 variable "extra_secret_volumes" {
   default     = {}
   description = "Map of extra volumes to mount to the Codecov deployments. This is primarily used to mount github app integration secret key."
@@ -111,37 +98,18 @@ variable "statsd_enabled" {
   type    = bool
   default = false
 }
-/*variable "postgres_username" {
-  type = string
-}*/
 variable "postgres_url" {
   type = string
 }
-/*
-variable "postgres_password" {
-  type = string
-}
-variable "postgres_host" {
-  type = string
-}*/
 variable "redis_url" {
   type = string
 }
 
 variable "minio_domain" {
   type = string
-  default = ""
 }
-/*variable "common_env" {
-  type = map
-  default = ""
-}
-variable "common_secret_env" {
-  type = map
-  default = ""
-}*/
 variable "codecov_yml_file" {
-  type = any
+  type    = any
   default = "../codecov.yml"
 }
 variable "enable_certmanager" {
@@ -177,21 +145,17 @@ variable "tls_cert" {
   description = "Path to certificate to use for TLS"
   default     = ""
 }
-variable "minio_name" {
-  default = ""
-  type    = string
+variable "minio_bucket" {
+  description = "The name of the s3 bucket / GCS bucket / Azure storage account to use to store reports"
+  type        = string
 }
-variable "minio" {
-  default = false
-  type    = string
+variable "minio_enabled" {
+  description = "Enable to deploy minio into the cluster"
+  default     = false
+  type        = string
 }
-variable "minio_primary_access_key" {
-  default = ""
-  type    = string
-}
-variable "minio_secret" {
-  default = false
-}
-variable "enable_aws_minio_env_run_as" {
-  default = false
+variable "service_account_annotations" {
+  type        = map(string)
+  default     = {}
+  description = "Annotations to add to the codecov service account"
 }

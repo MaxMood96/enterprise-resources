@@ -69,13 +69,7 @@ variable "resource_tags" {
   type = map(any)
   default = {
     application = "codecov"
-    environment = "test"
   }
-}
-
-variable "scm_ca_cert" {
-  description = "SCM CA certificate path"
-  default     = ""
 }
 
 variable "ingress_enabled" {
@@ -117,7 +111,7 @@ variable "ingress_pod_labels" {
   default     = {}
 }
 
-variable "codecov_namespace" {
+variable "namespace" {
   description = "Namespace to deploy Codecov into"
   default     = "codecov"
 }
@@ -155,4 +149,41 @@ variable "management_users" {
 variable "metrics_enabled" {
   type    = bool
   default = true
+}
+
+variable "extra_env" {
+  default     = {}
+  description = "Map of extra environment variables to add"
+}
+variable "extra_secret_env" {
+  default     = {}
+  description = "Map of extra environment variables to add as a secret and them source from the secret"
+}
+variable "extra_secret_volumes" {
+  default     = {}
+  description = "Map of extra volumes to mount to the Codecov deployments. This is primarily used to mount github app integration secret key."
+  validation {
+    condition = alltrue(
+      [for o in var.extra_secret_volumes : (length(lookup(o, "mount_path", "")) > 0)]
+    )
+    error_message = "All extra volumes must have a mount_path to mount in the containers"
+  }
+  validation {
+    condition = alltrue(
+      [for o in var.extra_secret_volumes : (length(lookup(o, "local_path", "")) > 0)],
+    )
+    error_message = "All extra volumes must have a local_path to load a file from"
+  }
+  validation {
+    condition = alltrue(
+      [for o in var.extra_secret_volumes : fileexists(lookup(o, "local_path", "DOES_NOT_EXIST"))]
+    )
+    error_message = "Local file must exist to load into secret"
+  }
+  validation {
+    condition = alltrue(
+      [for o in var.extra_secret_volumes : (length(lookup(o, "file_name", "")) > 0)],
+    )
+    error_message = "All extra volumes must have a file_name to assign in the secret"
+  }
 }

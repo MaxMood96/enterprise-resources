@@ -10,4 +10,8 @@ locals {
   tld                 = split(".", module.codecov.ingress_host)[0]
   minio_domain        = "minio.${var.domain}"
   lb_ip               = var.ingress_enabled ? module.codecov.lb_ip : ""
+  extra_secret_env = merge(var.extra_secret_env, {
+    MINIO_ACCESS_KEY = data.terraform_remote_state.cluster.outputs.minio_name
+    MINIO_SECRET_KEY = data.terraform_remote_state.cluster.outputs.minio_primary_access_key
+  })
 }

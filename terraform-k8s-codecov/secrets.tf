@@ -5,7 +5,7 @@ resource "kubernetes_secret" "codecov-yml" {
     namespace = local.namespace
   }
   data = {
-    "codecov.yml" = var.codecov_yml_file
+    "codecov.yml" = local.codecov_yaml
   }
 }
 

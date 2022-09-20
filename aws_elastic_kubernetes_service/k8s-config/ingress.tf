@@ -60,7 +60,7 @@ resource "helm_release" "ingress" {
 }
 
 resource "kubernetes_ingress_v1" "ingress" {
-  count = var.ingress_enabled ? 1 : 0
+  count                  = var.ingress_enabled ? 1 : 0
   wait_for_load_balancer = true
   metadata {
     name        = "codecov-ingress"

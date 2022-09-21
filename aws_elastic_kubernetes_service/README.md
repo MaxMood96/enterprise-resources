@@ -47,13 +47,15 @@ for a fully robust deployment.
 
 Configuration of Codecov enterprise is handled through a YAML config file.
 See [configuring codecov.yml](https://docs.codecov.io/docs/configuration) for 
-more info.  Refer to this example [codecov.yml](codecov.yml.example) for the
+more info.  Refer to this example [codecov.yml](../codecov.yml.example) for the
 minimum necessary configuration.
 
 The terraform stack is configured using terraform variables which can be
 defined in a `terraform.tfvars` file.  More info on
 [Terraform input variables](https://www.terraform.io/docs/configuration/variables.html).
 
+## Examples
+Be sure to check out our [examples](../examples)!
 
 ## Executing terraform
 

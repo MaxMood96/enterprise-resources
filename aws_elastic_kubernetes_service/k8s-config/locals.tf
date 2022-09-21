@@ -19,16 +19,18 @@ locals {
     "alb.ingress.kubernetes.io/backend-protocol" = "HTTP"
     "alb.ingress.kubernetes.io/target-type"      = "ip"
   }, local.https_annotations)
-  minio_envs = {
+  extra_env = merge(var.extra_env, {
     SERVICES__MINIO__REGION = var.region
-    SERVICES__MINIO__PORT   = 443
     #SERVICES__MINIO__IAM_AUTH   = false # we cannot use iam auth here because minio does not currently support aws metadata v2 service
-    SERVICES__MINIO__VERIFY_SSL = true
-    SERVICES__MINIO__BUCKET     = local.connection_strings.minio_bucket
-    SERVICES__MINIO__HOST       = local.govcloud_enabled ? "s3-${var.region}.amazonaws.com" : "s3.amazonaws.com"
-    SERVICES__CHOSEN_STORAGE    = "aws"
-    SERVICES__AWS__RESOURCE     = "s3"
-  }
+    SERVICES__CHOSEN_STORAGE = "aws"
+    SERVICES__AWS__RESOURCE  = "s3"
+  })
+  extra_secret_env = merge(var.extra_secret_env, {
+    SERVICES__MINIO__ACCESS_KEY_ID       = local.connection_strings.minio_access_key
+    SERVICES__AWS__AWS_ACCESS_KEY_ID     = local.connection_strings.minio_access_key
+    SERVICES__MINIO__SECRET_ACCESS_KEY   = local.connection_strings.minio_secret_key
+    SERVICES__AWS__AWS_SECRET_ACCESS_KEY = local.connection_strings.minio_secret_key
+  })
   # https://docs.aws.amazon.com/eks/latest/userguide/add-ons-images.html
   registries = {
     af-south-1     = "877085696533.dkr.ecr.af-south-1.amazonaws.com"

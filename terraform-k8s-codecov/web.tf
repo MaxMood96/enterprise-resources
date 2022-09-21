@@ -33,6 +33,7 @@ resource "kubernetes_deployment" "web" {
             }
           }
         }
+        service_account_name = kubernetes_service_account.codecov.metadata.0.name
         container {
           name  = "web"
           image = "codecov/enterprise-web:${var.codecov_version}"
@@ -65,7 +66,7 @@ resource "kubernetes_deployment" "web" {
             }
           }
           dynamic "env" {
-            for_each = local.common_secret_env
+            for_each = local.secret_env
             content {
               name = env.key
               value_from {

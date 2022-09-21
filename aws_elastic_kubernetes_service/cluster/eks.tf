@@ -108,6 +108,24 @@ resource "aws_security_group_rule" "eks-web-in" {
   type                     = "ingress"
 }
 
+resource "aws_security_group_rule" "eks-node-api-in" {
+  from_port                = 8000
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.eks.id
+  source_security_group_id = module.eks.node_security_group_id
+  to_port                  = 8000
+  type                     = "ingress"
+}
+
+resource "aws_security_group_rule" "eks-node-web-in" {
+  from_port                = 5000
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.eks.id
+  source_security_group_id = module.eks.node_security_group_id
+  to_port                  = 5000
+  type                     = "ingress"
+}
+
 resource "aws_security_group_rule" "eks-api-out" {
   from_port                = 8000
   protocol                 = "tcp"
@@ -117,11 +135,29 @@ resource "aws_security_group_rule" "eks-api-out" {
   type                     = "egress"
 }
 
+resource "aws_security_group_rule" "eks-node-api-out" {
+  from_port                = 8000
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.eks.id
+  source_security_group_id = module.eks.node_security_group_id
+  to_port                  = 8000
+  type                     = "egress"
+}
+
 resource "aws_security_group_rule" "eks-web-out" {
   from_port                = 5000
   protocol                 = "tcp"
   security_group_id        = aws_security_group.eks.id
   source_security_group_id = module.eks.cluster_security_group_id
+  to_port                  = 5000
+  type                     = "egress"
+}
+
+resource "aws_security_group_rule" "eks-node-web-out" {
+  from_port                = 5000
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.eks.id
+  source_security_group_id = module.eks.node_security_group_id
   to_port                  = 5000
   type                     = "egress"
 }

@@ -1,5 +1,5 @@
 resource "kubernetes_deployment" "minio_storage" {
-  count = var.minio ? 1 : 0
+  count = var.minio_enabled ? 1 : 0
   metadata {
     name      = "minio"
     namespace = local.namespace
@@ -79,7 +79,7 @@ resource "kubernetes_deployment" "minio_storage" {
 }
 
 resource "kubernetes_service" "minio" {
-  count = var.minio ? 1 : 0
+  count = var.minio_enabled ? 1 : 0
   metadata {
     name      = "minio"
     namespace = local.namespace

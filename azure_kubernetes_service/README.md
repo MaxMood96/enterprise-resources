@@ -72,6 +72,9 @@ to your internal resources, the IP address for the NAT gateway can be found in
 the terraform output as `egress-ip`.  All requests from Codecov Enterprise 
 will originate from this address.
 
+## Examples
+Be sure to check out our [examples](../examples)!
+
 ## Executing terraform
 
 After configuring `codecov.yml` and `terraform.tfvars` you are ready to execute

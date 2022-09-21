@@ -9,12 +9,6 @@ data "aws_iam_role" "ingress" {
   name  = "codecov-ingress-controller"
 }
 
-data "aws_vpc" "vpc" {
-  count = var.ingress_enabled ? 1 : 0
-  tags = {
-    Name = var.vpc_name
-  }
-}
 
 resource "kubernetes_service_account" "ingress" {
   count                           = var.ingress_enabled ? 1 : 0
@@ -60,11 +54,11 @@ resource "helm_release" "ingress" {
 }
 
 resource "kubernetes_ingress_v1" "ingress" {
-  count = var.ingress_enabled ? 1 : 0
+  count                  = var.ingress_enabled ? 1 : 0
   wait_for_load_balancer = true
   metadata {
     name        = "codecov-ingress"
-    namespace   = var.codecov_namespace
+    namespace   = var.namespace
     annotations = local.ingress_annotations
   }
   spec {
@@ -110,7 +104,7 @@ resource "kubernetes_ingress_v1" "ingress" {
       }
     }
   }
-  depends_on = [kubernetes_service.web, kubernetes_namespace.codecov]
+  depends_on = [module.codecov]
 }
 #https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/deploy/installation/#summary
 #https://github.com/aws/eks-charts/blob/master/stable/aws-load-balancer-controller/crds/crds.yaml

@@ -17,10 +17,6 @@ It is recommended to fork this repository before use.
 - [Google Kubernetes Engine](google_kubernetes_engine/README.md)
 - [Microsoft Azure Kubernetes Service](azure_kubernetes_service/README.md)
 
-Migrating an existing Codecov Enterprise installation and utilizing an existing
-PostgreSQL database and S3 bucket:
-- [AWS EKS Migration Stack](aws_eks_migration/README.md)
-
 ### Terraform Module
 - [Codecov k8s terraform module](terraform-k8s-codecov/README.md)
 

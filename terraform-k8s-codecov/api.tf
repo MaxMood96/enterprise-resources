@@ -72,7 +72,7 @@ resource "kubernetes_deployment" "api" {
               value_from {
                 secret_key_ref {
                   name = env.value.secret
-                  key  = env.value.key
+                  key  = env.key
                 }
               }
             }

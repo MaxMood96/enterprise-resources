@@ -13,9 +13,6 @@ output "codecov_name" {
 output "namespace_name" {
   value = kubernetes_namespace.codecov[0].metadata[0].name
 }
-output "minio_secrets_name" {
-  value = var.minio_enabled ? kubernetes_secret.minio-secrets[0].metadata[0].name : ""
-}
 output "codecov_url" {
   value = local.codecov_url
 }

@@ -37,7 +37,7 @@ resource "kubernetes_deployment" "worker" {
         container {
           name  = "worker"
           image = "codecov/enterprise-worker:${var.codecov_version}"
-          args  = ["worker", "--queue celery,uploads", "--concurrency 1"]
+          args  = ["worker", "--queue", "celery,uploads", "--concurrency", "1"]
           dynamic "env" {
             for_each = var.statsd_enabled ? { host = true } : {}
             content {

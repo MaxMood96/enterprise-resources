@@ -1,4 +1,4 @@
-resource "kubernetes_deployment" "web" {
+/*resource "kubernetes_deployment" "web" {
   metadata {
     name        = "web"
     annotations = var.resource_tags
@@ -168,5 +168,5 @@ resource "kubernetes_service" "web" {
       app = "web"
     }
   }
-}
+}*/
 

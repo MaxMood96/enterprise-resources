@@ -1,4 +1,4 @@
-resource "kubernetes_deployment" "api" {
+/*resource "kubernetes_deployment" "api" {
   metadata {
     name        = "api"
     annotations = var.resource_tags
@@ -145,4 +145,4 @@ resource "kubernetes_service" "api" {
     }
   }
 }
-
+*/

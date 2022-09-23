@@ -29,7 +29,7 @@ resource "kubernetes_deployment" "minio_storage" {
             name = "MINIO_ACCESS_KEY"
             value_from {
               secret_key_ref {
-                name = local.secret_env["MINIO_ACCESS_KEY"]
+                name = local.secret_env["MINIO_ACCESS_KEY"].secret
                 key  = "MINIO_ACCESS_KEY"
               }
             }
@@ -38,7 +38,7 @@ resource "kubernetes_deployment" "minio_storage" {
             name = "MINIO_SECRET_KEY"
             value_from {
               secret_key_ref {
-                name = local.secret_env["MINIO_SECRET_KEY"]
+                name = local.secret_env["MINIO_SECRET_KEY"].secret
                 key  = "MINIO_SECRET_KEY"
               }
             }

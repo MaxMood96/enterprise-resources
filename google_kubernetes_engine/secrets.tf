@@ -1,4 +1,4 @@
-resource "kubernetes_secret" "codecov-yml" {
+/*resource "kubernetes_secret" "codecov-yml" {
   metadata {
     name        = "codecov-yml"
     annotations = var.resource_tags
@@ -16,4 +16,4 @@ resource "kubernetes_secret" "scm-ca-cert" {
   data = {
     "scm_ca_cert.pem" = var.scm_ca_cert != "" ? file(var.scm_ca_cert) : ""
   }
-}
+}*/

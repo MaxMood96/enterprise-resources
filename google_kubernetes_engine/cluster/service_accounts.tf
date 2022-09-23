@@ -40,15 +40,15 @@ resource "google_service_account_key" "minio" {
 resource "google_storage_hmac_key" "minio" {
   service_account_email = google_service_account.minio.email
 }
-
+/*
 resource "kubernetes_service_account" "traefik" {
   metadata {
     name      = "codecov-traefik"
     namespace = "default"
   }
 }
-
-resource "kubernetes_cluster_role" "traefik" {
+/*
+resource "kubernetes_cluster_role" "traefik" {ccd .
   metadata {
     name = "codecov-traefik"
   }
@@ -96,5 +96,5 @@ resource "kubernetes_cluster_role_binding" "traefik" {
     kind      = "ClusterRole"
     name      = kubernetes_cluster_role.traefik.metadata[0].name
   }
-}
+}*/
 

@@ -1,7 +1,7 @@
 resource "google_redis_instance" "codecov" {
   name           = "codecov-enterprise-${random_pet.databases.id}"
   memory_size_gb = var.redis_memory_size
-
+  authorized_network = google_compute_network.codecov.name
   labels = var.resource_tags
 }
 
@@ -16,8 +16,9 @@ resource "random_pet" "databases" {
 
 resource "google_sql_database_instance" "codecov" {
   name             = "codecov-enterprise-${random_pet.databases.id}"
-  database_version = "POSTGRES_9_6"
+  database_version = "POSTGRES_9_6" #might want to change
   region           = var.region
+
 
   settings {
     tier        = var.postgres_instance_type

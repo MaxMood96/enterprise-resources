@@ -1,10 +1,3 @@
-**Note: This module is provided purely as an example and not as an
-official Codecov Enterprise deployment strategy. If you want to use
-this configuration to test Codecov Enterprise on your own internally
-maintained cluster, that is fine. Codecov, however, _will not support_
-its use in production environments, nor will we provide support for this
-module's installation or continued use in any context.**
-
 # Codecov terraform module for kubernetes
 
 This module provides an example of how to set up Codecov Enterprise in a 

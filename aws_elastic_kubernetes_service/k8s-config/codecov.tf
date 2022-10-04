@@ -17,6 +17,6 @@ module "codecov" {
   ingress_enabled      = false # We want to use the AWS ingress
   minio_bucket         = local.connection_strings.minio_bucket
   service_account_annotations = {
-    "eks.amazonaws.com/role-arn" = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/codecov-enterprise-eks"
+    "eks.amazonaws.com/role-arn" = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${data.terraform_remote_state.cluster.outputs.codecov_role_name}"
   }
 }

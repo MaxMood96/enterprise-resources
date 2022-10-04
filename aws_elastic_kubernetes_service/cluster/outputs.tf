@@ -17,3 +17,11 @@ output "nat_gateway_ips" {
 output "secret_name" {
   value = aws_secretsmanager_secret.connections.name
 }
+
+output "codecov_role_name" {
+  value = aws_iam_role.codecov.name
+}
+
+output "alb_role_arn" {
+  value = var.ingress_enabled ? aws_iam_role.ingress[0].arn : ""
+}

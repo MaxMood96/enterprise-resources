@@ -1,6 +1,6 @@
 
 resource "aws_iam_role" "codecov" {
-  name               = "codecov-enterprise-eks"
+  name_prefix        = "codecov-enterprise-eks-"
   assume_role_policy = data.aws_iam_policy_document.codecov-eks.json
   tags               = var.resource_tags
 }
@@ -11,7 +11,7 @@ resource "aws_iam_role_policy_attachment" "minio-s3" {
 }
 
 resource "aws_iam_role" "codecov-ebs-csi" {
-  name               = "codecov-ebs-csi"
+  name_prefix        = "codecov-ebs-csi-"
   assume_role_policy = data.aws_iam_policy_document.ebs-csi.json
   tags               = var.resource_tags
 }
@@ -23,7 +23,7 @@ resource "aws_iam_role_policy_attachment" "ebs-csi" {
 
 resource "aws_iam_role" "ingress" {
   count       = var.ingress_enabled ? 1 : 0
-  name        = "codecov-ingress-controller"
+  name_prefix = "codecov-ingress-controller-"
   description = "Permissions required by the Kubernetes ALB Ingress controller"
 
   tags = var.resource_tags
@@ -33,7 +33,7 @@ resource "aws_iam_role" "ingress" {
 
 resource "aws_iam_policy" "ingress" {
   count       = var.ingress_enabled ? 1 : 0
-  name        = "codecov-alb-management"
+  name_prefix = "codecov-alb-management-"
   description = "Permissions that are required to manage AWS Application Load Balancers."
   policy      = local.govcloud_enabled ? file("files/ingress-govcloud.json") : file("files/ingress.json")
   tags        = var.resource_tags
@@ -49,8 +49,13 @@ resource "aws_iam_access_key" "minio" {
   user = aws_iam_user.minio.name
 }
 
+resource "random_pet" "user-suffix" {
+  length    = "2"
+  separator = "-"
+}
+
 resource "aws_iam_user" "minio" {
-  name = "codecov-minio"
+  name = "codecov-minio-${random_pet.user-suffix.id}"
   path = "/system/"
 }
 

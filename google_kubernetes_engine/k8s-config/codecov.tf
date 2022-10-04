@@ -1,6 +1,5 @@
 module "codecov" {
-  source = "../../terraform-k8s-codecov"
-
+  source               = "../../terraform-k8s-codecov"
   extra_secret_env     = local.extra_secret_env
   extra_env            = var.extra_env
   namespace            = var.namespace
@@ -13,9 +12,8 @@ module "codecov" {
   statsd_enabled       = var.statsd_enabled
   postgres_url         = local.postgres_url
   redis_url            = local.redis_url
-  minio_domain         = local.minio_domain
+  minio_domain         = "storage.googleapis.com"
   codecov_yml_file     = var.codecov_yml
-  ingress_enabled      = var.ingress_enabled
+  ingress_enabled      = false
   minio_bucket         = data.terraform_remote_state.cluster.outputs.minio_name
-  minio_enabled        = true
 }

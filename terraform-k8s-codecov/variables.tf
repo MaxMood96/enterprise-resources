@@ -159,3 +159,6 @@ variable "service_account_annotations" {
   default     = {}
   description = "Annotations to add to the codecov service account"
 }
+variable "web_service_type" {
+  default = "NodePort"
+}

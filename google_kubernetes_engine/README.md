@@ -1,3 +1,4 @@
+TODO update this
 # Google Kubernetes Engine
 
 This is an example Codecov stack deployed to Google Kubernetes Engine using
@@ -61,8 +62,6 @@ defined in a `terraform.tfvars` file.  More info on
 | `node_pool_machine_type` | Machine type to use for the node pools | n1-standard-1 |
 | `web_resources` | Map of resources for web k8s deployment | See `variables.tf` |
 | `worker_resources` | Map of resources for worker k8s deployment | See `variables.tf` |
-| `traefik_resources` | Map of resources for traefik k8s deployment | See `variables.tf` |
-| `enable_traefik` | Whether to include Traefik for ingress and HTTPS | 1 |
 | `minio_bucket_name` | Name of GCS bucket to create for minio | required |
 | `minio_bucket_location` | Name of GCS bucket to create for minio | US |
 | `minio_bucket_force_destroy` | Required to allow destroying a non-empty bucket | false |
@@ -89,16 +88,7 @@ The default node pool machine type and number of instances are the minimum to ge
 the Codecov application up and running.  Tuning these will be required,
 dependent on your specific use-case.
 
-### Traefik
 
-Traefik is included for ingress in order to support HTTPS, streamline the setup, 
-and make this stack as turn-key as possible.  It can be excluded in favor of 
-using GCP services to manage your domain and certificate.  To disable Traefik,
-include this in your `terraform.tfvars` file:
-
-```
-enable_traefik = 0
-```
 
 ### Granting Codecov access to internal resources
 
@@ -108,6 +98,8 @@ the terraform output.  All requests from Codecov Enterprise will originate from
 this address.
 
 ## Executing terraform
+
+This is a 2 part terraform template due to limitations of terraform. The kubernetes run must be separate from the EKS create. Part 1 is the cluster. You will perform the below steps in the cluster directory. Upon success run the same steps in the k8s-config directory.
 
 After configuring `codecov.yml` and `terraform.tfvars` you are ready to execute
 terraform and create the stack following these steps:

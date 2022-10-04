@@ -130,6 +130,7 @@ resource "kubernetes_service" "web" {
     selector = {
       app = "web"
     }
+    type = var.web_service_type
   }
 }
 

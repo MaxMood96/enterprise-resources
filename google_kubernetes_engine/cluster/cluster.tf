@@ -112,6 +112,6 @@ resource "google_container_node_pool" "worker" {
   }
 }
 
-# Grabs the goole client config in order to auth the kubernetes provider
+# Grabs the google client config in order to auth the kubernetes provider
 data "google_client_config" "current" {
 }

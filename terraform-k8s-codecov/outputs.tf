@@ -13,6 +13,4 @@ output "codecov_name" {
 output "namespace_name" {
   value = kubernetes_namespace.codecov[0].metadata[0].name
 }
-output "codecov_url" {
-  value = local.codecov_url
-}
+

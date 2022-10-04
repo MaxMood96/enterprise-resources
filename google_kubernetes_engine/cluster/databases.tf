@@ -16,13 +16,16 @@ resource "random_pet" "databases" {
 
 resource "google_sql_database_instance" "codecov" {
   name             = "codecov-enterprise-${random_pet.databases.id}"
-  database_version = "POSTGRES_9_6" #might want to change
+  database_version = "POSTGRES_14"
   region           = var.region
 
 
   settings {
     tier        = var.postgres_instance_type
     user_labels = var.resource_tags
+    ip_configuration {
+      private_network = google_compute_network.codecov.id
+    }
   }
 }
 

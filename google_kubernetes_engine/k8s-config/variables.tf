@@ -1,12 +1,31 @@
 
 variable "gcloud_project" {
   description = "Google cloud project"
+  default     = ""
 }
 variable "enable_external_tls" {
   description = "use if you have your own certificate and input tls_key and tls_cert"
   default     = "0"
 }
-
+variable "namespace" {
+  description = "Namespace to deploy Codecov into"
+  default     = "codecov"
+}
+variable "statsd_enabled" {
+  default = false
+}
+variable "root_domain" {
+  default = true
+}
+variable "dns_enabled" {
+  default = true
+}
+variable "ingress_enabled" {
+  default = true
+}
+variable "cert_enabled" {
+  default = true
+}
 
 // Example extra volume for GH App pem
 //extra_secret_volumes = {
@@ -24,6 +43,11 @@ variable "enable_external_tls" {
 //    local_path = "/secrets/CA.pem"
 //  }
 //}
+variable "extra_env" {
+  default     = {}
+  description = "Map of extra environment variables to add"
+}
+
 variable "extra_secret_volumes" {
   default     = {}
   description = "Map of extra volumes to mount to the Codecov deployments. This is primarily used to mount github app integration secret key."
@@ -57,6 +81,10 @@ variable "extra_secret_env" {
   description = "Map of extra environment variables to add as a secret and them source from the secret"
 }
 variable "region" {
+  description = "Google cloud region"
+  default     = "us-east4"
+}
+variable "dns_region" {
   description = "Google cloud region"
   default     = "us-east4"
 }
@@ -129,10 +157,10 @@ variable "worker_resources" {
   }
 }
 
-
+/*
 variable "minio_bucket_name" {
   description = "Name of GCS bucket to create for minio"
-}
+}*/
 
 variable "minio_bucket_location" {
   description = "Location of GCS bucket"
@@ -156,7 +184,11 @@ variable "postgres_instance_type" {
 
 variable "codecov_yml" {
   description = "Path to your codecov.yml"
-  default     = "codecov.yml"
+  default     = "../../codecov.yml"
+}
+variable "dns_zone" {
+  description = "Dns zone"
+  default     = ""
 }
 
 variable "ingress_host" {

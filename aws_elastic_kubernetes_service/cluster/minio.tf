@@ -1,7 +1,7 @@
 resource "aws_iam_policy" "minio-s3" {
-  name   = "codecov-minio-s3"
-  policy = data.aws_iam_policy_document.minio-s3.json
-  tags   = var.resource_tags
+  name_prefix = "codecov-minio-s3-"
+  policy      = data.aws_iam_policy_document.minio-s3.json
+  tags        = var.resource_tags
 }
 
 resource "random_pet" "minio-bucket-suffix" {

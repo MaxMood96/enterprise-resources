@@ -19,7 +19,7 @@ resource "kubernetes_service_account" "ingress" {
     annotations = {
       # This annotation is only used when running on EKS which can
       # use IAM roles for service accounts.
-      "eks.amazonaws.com/role-arn" = data.aws_iam_role.ingress[count.index].arn
+      "eks.amazonaws.com/role-arn" = data.terraform_remote_state.cluster.outputs.alb_role_arn
     }
     labels = {
       "app.kubernetes.io/name"       = "alb-ingress-controller"

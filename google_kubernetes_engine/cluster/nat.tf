@@ -42,7 +42,7 @@ resource "google_compute_global_address" "private_ip_alloc" {
   network       = google_compute_network.codecov.id
 }
 resource "google_service_networking_connection" "nat_service" {
-  network = google_compute_network.codecov.id
-  service = "servicenetworking.googleapis.com"
+  network                 = google_compute_network.codecov.id
+  service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.private_ip_alloc.name]
 }

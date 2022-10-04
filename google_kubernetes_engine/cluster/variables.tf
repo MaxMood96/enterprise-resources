@@ -62,5 +62,5 @@ variable "minio_bucket_force_destroy" {
 }
 variable "zone" {
   description = "name of region"
-  default = "us-east1"
+  default     = "us-east1"
 }

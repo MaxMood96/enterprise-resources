@@ -2,12 +2,12 @@
 extra_secret_volumes = {
   gh = {
     mount_path = "/gh"
-    file_name = "codecov.pem"
+    file_name  = "codecov.pem"
     local_path = "/secrets/codecov.pem"
   }
   scm = {
     mount_path = "/cert"
-    file_name = "scm_ca_cert.pem"
+    file_name  = "scm_ca_cert.pem"
     local_path = "/secrets/CA.pem"
   }
 }

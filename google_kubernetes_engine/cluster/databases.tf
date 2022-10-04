@@ -1,8 +1,8 @@
 resource "google_redis_instance" "codecov" {
-  name           = "codecov-enterprise-${random_pet.databases.id}"
-  memory_size_gb = var.redis_memory_size
+  name               = "codecov-enterprise-${random_pet.databases.id}"
+  memory_size_gb     = var.redis_memory_size
   authorized_network = google_compute_network.codecov.name
-  labels = var.resource_tags
+  labels             = var.resource_tags
 }
 
 # This is necessary due to google_sql_database instance names being eventually

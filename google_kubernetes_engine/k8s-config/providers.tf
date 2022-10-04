@@ -16,7 +16,7 @@ provider "kubernetes" {
     data.terraform_remote_state.cluster.outputs.cluster_ca_certificate,
   )
   token = data.google_client_config.current.access_token
-}/*
+} /*
 terraform {
   required_providers {
     kubectl = {

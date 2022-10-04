@@ -8,15 +8,15 @@ output "postgres_server_name" {
   value = google_sql_database_instance.codecov.connection_name
 }
 output "postgres_pw" {
-  value = google_sql_user.codecov.password
+  value     = google_sql_user.codecov.password
   sensitive = true
 }
 output "minio_secret_key" {
-  value = google_storage_hmac_key.minio.secret
+  value     = google_storage_hmac_key.minio.secret
   sensitive = true
 }
 output "minio_access_key" {
-  value = google_storage_hmac_key.minio.access_id
+  value     = google_storage_hmac_key.minio.access_id
   sensitive = true
 }
 output "minio_domain" {

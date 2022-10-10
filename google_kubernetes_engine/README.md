@@ -1,10 +1,9 @@
-TODO update this
 # Google Kubernetes Engine
 
 This is an example Codecov stack deployed to Google Kubernetes Engine using
 terraform.  It consists of:
 - A kubernetes cluster
-- 3 node groups (web, worker, minio)
+- 2 node groups (web, worker)
 - A cloud SQL Postgres instance
 - A Redis instance
 - A cloud storage bucket for coverage report storage.
@@ -38,6 +37,11 @@ account.
     ```
 - You will need a DNS hostname to assign to the load balancer IP address (ex:
   `codecov.yourdomain.com`).
+- If you choose to let the template handle dns you need to do the following
+  - Set `dns_credentials` variable to a file path to valid service account credentials for the account that contains your hosted zone.
+  - Set `dns_enabled` to `true`
+  - Set `dns_zone` to the name of the hosted zone in gcp
+  - Set `dns_project` to the name of the gcp project where the hosted zone resides
 
 ## Codecov configuration
 

@@ -9,6 +9,9 @@ plan.out
 .kubeconfig
 vagrant/creds/
 codecov.yml
+gcp.yml
+aws.yml
+azure.yml
 */creds/*
 kubeconfig_default-codecov-cluster
 config-map-aws-auth_default-codecov-cluster.yaml

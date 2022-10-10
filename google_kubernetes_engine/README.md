@@ -3,7 +3,7 @@
 This is an example Codecov stack deployed to Google Kubernetes Engine using
 terraform.  It consists of:
 - A kubernetes cluster
-- 3 node groups (web, worker, minio)
+- 2 node groups (web, worker)
 - A cloud SQL Postgres instance
 - A Redis instance
 - A cloud storage bucket for coverage report storage.
@@ -37,51 +37,24 @@ account.
     ```
 - You will need a DNS hostname to assign to the load balancer IP address (ex:
   `codecov.yourdomain.com`).
+- If you choose to let the template handle dns you need to do the following
+  - Set `dns_credentials` variable to a file path to valid service account credentials for the account that contains your hosted zone.
+  - Set `dns_enabled` to `true`
+  - Set `dns_zone` to the name of the hosted zone in gcp
+  - Set `dns_project` to the name of the gcp project where the hosted zone resides
 
 ## Codecov configuration
 
 Configuration of Codecov enterprise is handled through a YAML config file.
 See [configuring codecov.yml](https://docs.codecov.io/docs/configuration) for 
-more info.  Refer to this example [codecov.yml](codecov.yml.example) for the
+more info.  Refer to this example [codecov.yml](../codecov.yml.example) for the
 minimum necessary configuration.
 
 The terraform stack is configured using terraform variables which can be
 defined in a `terraform.tfvars` file.  More info on
 [Terraform input variables](https://www.terraform.io/docs/configuration/variables.html).
 
-| name | description | default |
-| --- | --- | --- |
-| `gcloud_project` | Google cloud project name | required |
-| `region` | Google cloud region | us-east4 |
-| `zone` | Default Google cloud zone for zone-specific services | us-east4a |
-| `codecov_version` | Version of codecov enterprise to deploy* | latest-stable |
-| `cluster_name` | Google Kubernetes Engine (GKE) cluster name | default-codecov-cluster |
-| `web_node_pool_count` | Number of nodes to create in the web node pool | 1 |
-| `worker_node_pool_count` | Number of nodes to create in the worker node pool | 1 |
-| `node_pool_machine_type` | Machine type to use for the node pools | n1-standard-1 |
-| `web_resources` | Map of resources for web k8s deployment | See `variables.tf` |
-| `worker_resources` | Map of resources for worker k8s deployment | See `variables.tf` |
-| `traefik_resources` | Map of resources for traefik k8s deployment | See `variables.tf` |
-| `enable_traefik` | Whether to include Traefik for ingress and HTTPS | 1 |
-| `minio_bucket_name` | Name of GCS bucket to create for minio | required |
-| `minio_bucket_location` | Name of GCS bucket to create for minio | US |
-| `minio_bucket_force_destroy` | Required to allow destroying a non-empty bucket | false |
-| `redis_memory_size` | Amount of memory in GB to allocate for redis instance | 5 |
-| `postgres_instance_type` | Instance type used for postgres | db-f1-micro |
-| `codecov_yml` | Path to your codecov.yml | required |
-| `ingress_host` | Hostname used for http(s) ingress. (ex: `codecov.yourdomain.com`) | |
-| `enable_https` | Enables https ingress.  Requires TLS cert and key | 0 |
-| `tls_key` | Path to private key to use for TLS | required if enable_https=1 |
-| `tls_cert` | Path to certificate to use for TLS | required if enable_https=1  |
-| `resource_tags` | Map of tags to include in compatible resources | `{application=codecov, environment=test}` |
-| `scm_ca_cert` | Optional SCM CA certificate path in PEM format | |
-\* Specifying a codecov_version is recommended and requires the format `v$VERSION` e.g. `v4.5.8`
-
-### `scm_ca_cert`
-
-If `scm_ca_cert` is configured, it will be available to Codecov at
-`/cert/scm_ca_cert.pem`.  Include this path in your `codecov.yml` in the scm
-config.
+\* Specifying a codecov_version is recommended and requires the format `v$VERSION` e.g. `v4.6.6`
 
 ### Instance Types
 
@@ -89,16 +62,6 @@ The default node pool machine type and number of instances are the minimum to ge
 the Codecov application up and running.  Tuning these will be required,
 dependent on your specific use-case.
 
-### Traefik
-
-Traefik is included for ingress in order to support HTTPS, streamline the setup, 
-and make this stack as turn-key as possible.  It can be excluded in favor of 
-using GCP services to manage your domain and certificate.  To disable Traefik,
-include this in your `terraform.tfvars` file:
-
-```
-enable_traefik = 0
-```
 
 ### Granting Codecov access to internal resources
 
@@ -108,6 +71,8 @@ the terraform output.  All requests from Codecov Enterprise will originate from
 this address.
 
 ## Executing terraform
+
+This is a 2 part terraform template due to limitations of terraform. The kubernetes run must be separate from the GKE create. Part 1 is the cluster. You will perform the below steps in the cluster directory. Upon success run the same steps in the k8s-config directory.
 
 After configuring `codecov.yml` and `terraform.tfvars` you are ready to execute
 terraform and create the stack following these steps:

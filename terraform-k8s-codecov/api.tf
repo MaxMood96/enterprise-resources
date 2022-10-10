@@ -131,4 +131,7 @@ resource "kubernetes_service" "api" {
       app = "api"
     }
   }
+  lifecycle {
+    ignore_changes = [metadata.0.annotations]
+  }
 }

@@ -130,6 +130,10 @@ resource "kubernetes_service" "web" {
     selector = {
       app = "web"
     }
+    type = var.web_service_type
+  }
+  lifecycle {
+    ignore_changes = [metadata.0.annotations]
   }
 }
 

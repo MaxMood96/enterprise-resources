@@ -11,7 +11,9 @@ locals {
   minio_domain        = "minio.${var.domain}"
   lb_ip               = var.ingress_enabled ? module.codecov.lb_ip : ""
   extra_secret_env = merge(var.extra_secret_env, {
-    MINIO_ACCESS_KEY = data.terraform_remote_state.cluster.outputs.minio_name
-    MINIO_SECRET_KEY = data.terraform_remote_state.cluster.outputs.minio_primary_access_key
+    MINIO_ACCESS_KEY                   = data.terraform_remote_state.cluster.outputs.minio_name
+    MINIO_SECRET_KEY                   = data.terraform_remote_state.cluster.outputs.minio_primary_access_key
+    SERVICES__MINIO__ACCESS_KEY_ID     = data.terraform_remote_state.cluster.outputs.minio_name
+    SERVICES__MINIO__SECRET_ACCESS_KEY = data.terraform_remote_state.cluster.outputs.minio_primary_access_key
   })
 }

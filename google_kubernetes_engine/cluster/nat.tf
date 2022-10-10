@@ -1,21 +1,17 @@
 resource "google_compute_network" "codecov" {
-  name = "codecov-enterprise"
+  name = var.name
 }
 
 resource "google_compute_address" "nat" {
-  name = "codecov-enterprise"
-}
-
-output "egress-ip" {
-  value = google_compute_address.nat.address
+  name   = var.name
+  region = var.region
 }
 
 resource "google_compute_router" "codecov" {
-  name    = "codecov-enterprise"
+  name    = var.name
   region  = var.region
   network = google_compute_network.codecov.name
 }
-
 
 resource "google_compute_router_nat" "nat" {
   name                               = "codecov-nat"

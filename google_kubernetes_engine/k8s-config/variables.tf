@@ -190,6 +190,10 @@ variable "dns_zone" {
   description = "Dns zone"
   default     = ""
 }
+variable "dns_project" {
+  description = "Project that DNS zone resides in"
+  default     = ""
+}
 
 variable "ingress_host" {
   description = "Hostname used for http(s) ingress"
@@ -219,7 +223,7 @@ variable "resource_tags" {
   }
 }
 
-variable "scm_ca_cert" {
-  description = "SCM CA certificate path"
+variable "dns_credentials" {
   default     = ""
+  description = "Filepath to gcp service account json key to manage dns. Only needed if dns is enabled. There is currently not a clean way to use the normal credentials while still enabling optional cross account."
 }

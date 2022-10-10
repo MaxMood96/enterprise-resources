@@ -12,8 +12,8 @@ data "google_container_engine_versions" "gke" {
 }
 
 resource "google_container_cluster" "primary" {
-  name     = var.cluster_name
-  location = var.region
+  name     = var.name
+  location = local.location
 
   min_master_version = data.google_container_engine_versions.gke.latest_master_version
 
@@ -23,8 +23,8 @@ resource "google_container_cluster" "primary" {
   network = google_compute_network.codecov.name
 
   private_cluster_config {
-    enable_private_nodes    = "true"
-    enable_private_endpoint = "false"
+    enable_private_nodes    = true
+    enable_private_endpoint = false
     master_ipv4_cidr_block  = "10.254.0.0/28"
   }
 
@@ -37,6 +37,16 @@ resource "google_container_cluster" "primary" {
   master_auth {
     client_certificate_config {
       issue_client_certificate = "true"
+    }
+  }
+
+  master_authorized_networks_config {
+    dynamic "cidr_blocks" {
+      for_each = var.cluster_authorized_cidrs
+      content {
+        cidr_block   = cidr_blocks.value
+        display_name = cidr_blocks.key
+      }
     }
   }
 
@@ -58,7 +68,7 @@ resource "google_container_cluster" "primary" {
 
 resource "google_container_node_pool" "web" {
   name       = "web"
-  location   = var.region
+  location   = local.location
   cluster    = google_container_cluster.primary.name
   node_count = var.web_node_pool_count
 
@@ -69,11 +79,11 @@ resource "google_container_node_pool" "web" {
       var.resource_tags
     )
 
-    preemptible  = true
+    spot         = var.web_spot_enabled
     machine_type = var.node_pool_machine_type
 
     metadata = {
-      disable-legacy-endpoints = "true"
+      disable-legacy-endpoints = true
     }
 
     oauth_scopes = [
@@ -86,7 +96,7 @@ resource "google_container_node_pool" "web" {
 
 resource "google_container_node_pool" "worker" {
   name       = "worker"
-  location   = var.region
+  location   = local.location
   cluster    = google_container_cluster.primary.name
   node_count = var.worker_node_pool_count
 
@@ -97,11 +107,11 @@ resource "google_container_node_pool" "worker" {
       var.resource_tags
     )
 
-    preemptible  = true
+    spot         = var.worker_spot_enabled
     machine_type = var.node_pool_worker_machine_type
 
     metadata = {
-      disable-legacy-endpoints = "true"
+      disable-legacy-endpoints = true
     }
 
     oauth_scopes = [

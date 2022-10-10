@@ -1,32 +1,29 @@
 resource "google_redis_instance" "codecov" {
-  name               = "codecov-enterprise-${random_pet.databases.id}"
+  name               = local.random_name
+  tier               = "BASIC"
   memory_size_gb     = var.redis_memory_size
   authorized_network = google_compute_network.codecov.name
   labels             = var.resource_tags
-}
-
-# This is necessary due to google_sql_database instance names being eventually
-# consistent.  For tasks that require recreation of the db resource, using the 
-# same name often fails because it remains reserved until the record of the db
-# instance is fully purged from google's metadata.
-resource "random_pet" "databases" {
-  length    = "2"
-  separator = "-"
+  redis_version      = var.redis_version
+  auth_enabled       = true
+  location_id        = var.zone == "" ? null : var.zone
 }
 
 resource "google_sql_database_instance" "codecov" {
-  name             = "codecov-enterprise-${random_pet.databases.id}"
-  database_version = "POSTGRES_14"
+  name             = local.random_name
+  database_version = var.postgres_version
   region           = var.region
 
-
+  deletion_protection = var.deletion_protection
   settings {
-    tier        = var.postgres_instance_type
-    user_labels = var.resource_tags
+    tier              = var.postgres_instance_type
+    user_labels       = var.resource_tags
+    availability_type = var.zonal_cluster_enabled ? "ZONAL" : "REGIONAL"
     ip_configuration {
       private_network = google_compute_network.codecov.id
     }
   }
+  depends_on = [google_compute_global_address.private_ip_alloc]
 }
 
 resource "random_string" "postgres-password" {

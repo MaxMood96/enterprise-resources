@@ -1,4 +1,3 @@
-<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 No requirements.
@@ -7,8 +6,8 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | 4.38.0 |
-| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | 2.13.1 |
+| <a name="provider_google"></a> [google](#provider\_google) | 4.39.0 |
+| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | 2.14.0 |
 | <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
 
 ## Modules
@@ -23,7 +22,7 @@ No requirements.
 | Name | Type |
 |------|------|
 | [google_compute_managed_ssl_certificate.cert](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_managed_ssl_certificate) | resource |
-| [kubernetes_ingress_v1.example_ingress](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/ingress_v1) | resource |
+| [kubernetes_ingress_v1.ingress](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/ingress_v1) | resource |
 | [google_client_config.current](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/client_config) | data source |
 | [terraform_remote_state.cluster](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/data-sources/remote_state) | data source |
 
@@ -36,7 +35,9 @@ No requirements.
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Google Kubernetes Engine (GKE) cluster name | `string` | `"default-codecov-cluster"` | no |
 | <a name="input_codecov_version"></a> [codecov\_version](#input\_codecov\_version) | Version of codecov enterprise to deploy | `string` | `"latest-stable"` | no |
 | <a name="input_codecov_yml"></a> [codecov\_yml](#input\_codecov\_yml) | Path to your codecov.yml | `string` | `"../../codecov.yml"` | no |
+| <a name="input_dns_credentials"></a> [dns\_credentials](#input\_dns\_credentials) | Filepath to gcp service account json key to manage dns. Only needed if dns is enabled. There is currently not a clean way to use the normal credentials while still enabling optional cross account. | `string` | `""` | no |
 | <a name="input_dns_enabled"></a> [dns\_enabled](#input\_dns\_enabled) | n/a | `bool` | `true` | no |
+| <a name="input_dns_project"></a> [dns\_project](#input\_dns\_project) | Project that DNS zone resides in | `string` | `""` | no |
 | <a name="input_dns_region"></a> [dns\_region](#input\_dns\_region) | Google cloud region | `string` | `"us-east4"` | no |
 | <a name="input_dns_zone"></a> [dns\_zone](#input\_dns\_zone) | Dns zone | `string` | `""` | no |
 | <a name="input_enable_external_tls"></a> [enable\_external\_tls](#input\_enable\_external\_tls) | use if you have your own certificate and input tls\_key and tls\_cert | `string` | `"0"` | no |
@@ -57,7 +58,6 @@ No requirements.
 | <a name="input_region"></a> [region](#input\_region) | Google cloud region | `string` | `"us-east4"` | no |
 | <a name="input_resource_tags"></a> [resource\_tags](#input\_resource\_tags) | n/a | `map(any)` | <pre>{<br>  "application": "codecov",<br>  "environment": "test"<br>}</pre> | no |
 | <a name="input_root_domain"></a> [root\_domain](#input\_root\_domain) | n/a | `bool` | `true` | no |
-| <a name="input_scm_ca_cert"></a> [scm\_ca\_cert](#input\_scm\_ca\_cert) | SCM CA certificate path | `string` | `""` | no |
 | <a name="input_statsd_enabled"></a> [statsd\_enabled](#input\_statsd\_enabled) | n/a | `bool` | `false` | no |
 | <a name="input_tls_cert"></a> [tls\_cert](#input\_tls\_cert) | Path to certificate to use for TLS | `string` | `""` | no |
 | <a name="input_tls_key"></a> [tls\_key](#input\_tls\_key) | Path to private key to use for TLS | `string` | `""` | no |
@@ -73,4 +73,3 @@ No requirements.
 |------|-------------|
 | <a name="output_dns"></a> [dns](#output\_dns) | n/a |
 | <a name="output_lb_ip"></a> [lb\_ip](#output\_lb\_ip) | n/a |
-<!-- END_TF_DOCS -->

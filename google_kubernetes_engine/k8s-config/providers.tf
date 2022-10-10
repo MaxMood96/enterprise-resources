@@ -6,7 +6,7 @@ provider "google" {
   project     = local.dns_project
   region      = local.dns_region
   alias       = "dns"
-  credentials = "/Users/trent/development/codecov/dev.json"
+  credentials = var.dns_credentials
 }
 
 provider "kubernetes" {

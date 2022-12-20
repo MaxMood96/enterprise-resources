@@ -21,7 +21,7 @@ variable "prometheus_image" {
 }
 variable "grafana_image" {
   type    = string
-  default = "grafana/grafana:6.4.3"
+  default = "grafana/grafana:9.3.2"
 }
 
 variable "image_pull_policy" {

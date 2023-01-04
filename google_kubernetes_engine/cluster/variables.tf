@@ -100,7 +100,7 @@ variable "deletion_protection" {
 variable "cluster_authorized_cidrs" {
   type        = map(string)
   default     = {}
-  description = "Map of cidr ranges to allow access to the cluster endopint."
+  description = "Map of cidr ranges to allow access to the cluster endpoint."
   validation {
     condition = alltrue(
       [for k, v in var.cluster_authorized_cidrs : (length(regexall("(\\d{1,3}\\.){3}\\d{1,3}\\/\\d{1,2}", v)) > 0)]

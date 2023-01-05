@@ -111,8 +111,7 @@ resource "google_compute_firewall" "firewall-replication" {
   allow {
     protocol = "ICMP"
   }
-  source_ranges = compact(concat(var.source_inbound_ranges, ["35.231.233.196"]))
-  #target_tags   = [local.tag]
+  source_ranges = compact(var.source_inbound_ranges)
 }
 resource "google_compute_firewall" "firewall-pods_cidr" {
   count   = var.timescale_server_replication_enabled ? 1 : 0

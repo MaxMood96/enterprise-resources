@@ -1,5 +1,5 @@
 resource "google_compute_network" "codecov" {
-  name = "${var.name}1"
+  name = var.name
 }
 
 resource "google_compute_address" "nat" {

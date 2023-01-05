@@ -162,3 +162,9 @@ variable "service_account_annotations" {
 variable "web_service_type" {
   default = "NodePort"
 }
+variable "timescale_url" {
+  default = ""
+}
+variable "timescale_enabled" {
+  default = false
+}

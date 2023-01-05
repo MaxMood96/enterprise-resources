@@ -29,7 +29,7 @@ variable "source_ranges" {
   description = ""
 }
 variable "source_inbound_ranges" {
-  default     = ""
+  default     = []
   description = "Should be all ingress addresses for timescale"
 }
 variable "name" {

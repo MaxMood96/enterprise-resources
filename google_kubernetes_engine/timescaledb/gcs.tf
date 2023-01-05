@@ -1,5 +1,5 @@
 resource "google_storage_bucket" "postgres_backups" {
-  name          = "${var.name}-backups"
+  name          = "${data.terraform_remote_state.cluster.outputs.random_name}-backups"
   location      = var.storage_account_region
   force_destroy = true
   versioning {

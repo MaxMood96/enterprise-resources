@@ -23,7 +23,7 @@ resource "google_compute_instance" "timescale_db_server_primary" {
     network    = data.terraform_remote_state.cluster.outputs.network_name
     network_ip = google_compute_address.internal-address-replication[0].address
     subnetwork = data.google_compute_subnetwork.my-subnetwork.name
-    access_config {}
+
   }
 
 
@@ -74,7 +74,7 @@ resource "google_compute_instance" "timescale_db_server_secondary" {
     network    = data.terraform_remote_state.cluster.outputs.network_name
     network_ip = google_compute_address.internal-address-replication[1].address
     subnetwork = data.google_compute_subnetwork.my-subnetwork.name
-    access_config {}
+
   }
 
 
@@ -100,8 +100,8 @@ resource "google_compute_instance" "timescale_db_server_secondary" {
 
 
 resource "google_compute_firewall" "firewall-replication" {
-  count   = var.timescale_server_replication_enabled ? 1 : 0
-  name    = "${var.name}-internal-firewall"
+  count   = length(var.source_inbound_ranges) > 0 ? 1 : 0
+  name    = "${var.name}-sourceips-firewall"
   network = data.terraform_remote_state.cluster.outputs.network_name
   allow {
     protocol = "tcp"
@@ -110,23 +110,24 @@ resource "google_compute_firewall" "firewall-replication" {
   allow {
     protocol = "ICMP"
   }
-  source_ranges = [data.terraform_remote_state.cluster.outputs.cluster_primary_endpoint /*, length(var.source_inbound_ranges) > 0 ? var.source_inbound_ranges : ""*/]
+  source_ranges = compact(concat(var.source_inbound_ranges, ["35.231.233.196"]))
+  #target_tags   = [local.tag]
+}
+resource "google_compute_firewall" "firewall-pods_cidr" {
+  count   = var.timescale_server_replication_enabled ? 1 : 0
+  name    = "${var.name}-internal-firewall"
+  network = data.terraform_remote_state.cluster.outputs.network_name
+  allow {
+    protocol = "tcp"
+    ports    = concat(["5432"])
+  }
+  allow {
+    protocol = "ICMP"
+  }
+  source_ranges = [data.terraform_remote_state.cluster.outputs.pod_cidr]
   #target_tags   = [local.tag]
 }
 
-resource "google_compute_firewall" "internal-replication" {
-  count   = var.timescale_server_replication_enabled ? 1 : 0
-  name    = "${var.name}-internal-traffic"
-  network = data.terraform_remote_state.cluster.outputs.network_name
-
-  direction = "INGRESS"
-  allow {
-    protocol = "all"
-  }
-
-  source_ranges = [data.terraform_remote_state.cluster.outputs.cluster_primary_endpoint /*, length(var.source_inbound_ranges) > 0 ? var.source_inbound_ranges : ""*/]
-  #}
-}
 
 resource "google_compute_address" "internal-address-replication" {
   count        = var.timescale_server_replication_enabled ? 2 : 0

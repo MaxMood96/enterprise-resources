@@ -47,3 +47,13 @@ output "google_project" {
 output "nat_address" {
   value = google_compute_address.nat.address
 }
+
+output "network_name" {
+  value = google_compute_network.codecov.name
+}
+output "random_name" {
+  value = local.random_name
+}
+output "pod_cidr" {
+  value = google_container_cluster.primary.cluster_ipv4_cidr
+}

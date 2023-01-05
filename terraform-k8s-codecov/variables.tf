@@ -2,14 +2,12 @@ variable "codecov_version" {
   description = "Version of Codecov Enterprise to deploy"
   default     = "latest-stable"
 }
-
 variable "resource_tags" {
   type = map(any)
   default = {
     application = "codecov"
   }
 }
-
 variable "api_resources" {
   type = map(any)
   default = {
@@ -20,7 +18,7 @@ variable "api_resources" {
     memory_request = "256M"
   }
 }
-variable "web_resources" {
+variable "frontend_resources" {
   type = map(any)
   default = {
     replicas       = 2
@@ -30,7 +28,16 @@ variable "web_resources" {
     memory_request = "128M"
   }
 }
-
+variable "gateway_resources" {
+  type = map(any)
+  default = {
+    replicas       = 2
+    cpu_limit      = "1000m"
+    memory_limit   = "2048M"
+    cpu_request    = "150m"
+    memory_request = "128M"
+  }
+}
 variable "worker_resources" {
   type = map(any)
   default = {
@@ -41,7 +48,6 @@ variable "worker_resources" {
     memory_request = "1024M"
   }
 }
-
 variable "minio_resources" {
   type = map(any)
   default = {
@@ -52,7 +58,6 @@ variable "minio_resources" {
     memory_request = "64M"
   }
 }
-
 variable "namespace" {
   type    = string
   default = "codecov"
@@ -65,7 +70,6 @@ variable "extra_secret_env" {
   default     = {}
   description = "Map of extra environment variables to add as a secret and them source from the secret"
 }
-
 variable "extra_secret_volumes" {
   default     = {}
   description = "Map of extra volumes to mount to the Codecov deployments. This is primarily used to mount github app integration secret key."
@@ -129,18 +133,15 @@ variable "letsencrypt_server" {
   type    = string
   default = "https://acme-v02.api.letsencrypt.org/directory"
 }
-
 variable "letsencrypt_email" {
   type        = string
   description = "Email to use with letsencrypt. This is required if enable_certmanager is enabled"
   default     = ""
 }
-
 variable "tls_key" {
   description = "Path to private key to use for TLS"
   default     = ""
 }
-
 variable "tls_cert" {
   description = "Path to certificate to use for TLS"
   default     = ""
@@ -161,4 +162,24 @@ variable "service_account_annotations" {
 }
 variable "web_service_type" {
   default = "NodePort"
+}
+variable "codecov_repository" {
+  default     = "codecov"
+  description = "Docker repository to retrieve Codecov images"
+}
+variable "api_image" {
+  default = "enterprise-api"
+}
+variable "frontend_image" {
+  default = "enterprise-frontend"
+}
+variable "worker_image" {
+  default = "enterprise-worker"
+}
+variable "gateway_image" {
+  default = "enterprise-gateway"
+}
+variable "worker_args" {
+  default     = ["worker", "--queue", "celery,uploads", "--concurrency", "1"]
+  description = "Args to send to worker. This usually doesn't need to be adjusted."
 }

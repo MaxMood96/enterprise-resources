@@ -35,9 +35,9 @@ resource "kubernetes_ingress_v1" "ingress" {
           path = "/"
           backend {
             service {
-              name = kubernetes_service.web.metadata.0.name
+              name = kubernetes_service.gateway.metadata.0.name
               port {
-                number = 5000
+                number = 8080
               }
             }
           }

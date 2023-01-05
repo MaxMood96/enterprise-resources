@@ -36,7 +36,7 @@ resource "kubernetes_deployment" "api" {
         service_account_name = kubernetes_service_account.codecov.metadata.0.name
         container {
           name  = "api"
-          image = "codecov/enterprise-api:${var.codecov_version}"
+          image = "${var.codecov_repository}/${var.api_image}:${var.codecov_version}"
           port {
             container_port = 8000
           }

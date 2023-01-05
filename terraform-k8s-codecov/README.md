@@ -46,8 +46,9 @@ No modules.
 | [kubectl_manifest.letsencryptclusterissuer](https://registry.terraform.io/providers/gavinbunney/kubectl/1.14.0/docs/resources/manifest) | resource |
 | [kubectl_manifest.letsencryptissuer](https://registry.terraform.io/providers/gavinbunney/kubectl/1.14.0/docs/resources/manifest) | resource |
 | [kubernetes_deployment.api](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/deployment) | resource |
+| [kubernetes_deployment.frontend](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/deployment) | resource |
+| [kubernetes_deployment.gateway](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/deployment) | resource |
 | [kubernetes_deployment.minio_storage](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/deployment) | resource |
-| [kubernetes_deployment.web](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/deployment) | resource |
 | [kubernetes_deployment.worker](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/deployment) | resource |
 | [kubernetes_ingress_v1.ingress](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/ingress_v1) | resource |
 | [kubernetes_namespace.codecov](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
@@ -56,15 +57,18 @@ No modules.
 | [kubernetes_secret.secret_env](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/secret) | resource |
 | [kubernetes_secret_v1.tls-secret](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/secret_v1) | resource |
 | [kubernetes_service.api](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service) | resource |
+| [kubernetes_service.frontend](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service) | resource |
+| [kubernetes_service.gateway](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service) | resource |
 | [kubernetes_service.minio](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service) | resource |
-| [kubernetes_service.web](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service) | resource |
 | [kubernetes_service_account.codecov](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service_account) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_api_image"></a> [api\_image](#input\_api\_image) | n/a | `string` | `"enterprise-api"` | no |
 | <a name="input_api_resources"></a> [api\_resources](#input\_api\_resources) | n/a | `map(any)` | <pre>{<br>  "cpu_limit": "1000m",<br>  "cpu_request": "250m",<br>  "memory_limit": "2048M",<br>  "memory_request": "256M",<br>  "replicas": 2<br>}</pre> | no |
+| <a name="input_codecov_repository"></a> [codecov\_repository](#input\_codecov\_repository) | Docker repository to retrieve Codecov images | `string` | `"codecov"` | no |
 | <a name="input_codecov_version"></a> [codecov\_version](#input\_codecov\_version) | Version of Codecov Enterprise to deploy | `string` | `"latest-stable"` | no |
 | <a name="input_codecov_yml_file"></a> [codecov\_yml\_file](#input\_codecov\_yml\_file) | n/a | `any` | `"../codecov.yml"` | no |
 | <a name="input_enable_certmanager"></a> [enable\_certmanager](#input\_enable\_certmanager) | enables lets encrypt and creates certificate request based off codecov url in codecov.yml file | `bool` | `false` | no |
@@ -72,6 +76,10 @@ No modules.
 | <a name="input_extra_env"></a> [extra\_env](#input\_extra\_env) | Map of extra environment variables to add | `map` | `{}` | no |
 | <a name="input_extra_secret_env"></a> [extra\_secret\_env](#input\_extra\_secret\_env) | Map of extra environment variables to add as a secret and them source from the secret | `map` | `{}` | no |
 | <a name="input_extra_secret_volumes"></a> [extra\_secret\_volumes](#input\_extra\_secret\_volumes) | Map of extra volumes to mount to the Codecov deployments. This is primarily used to mount github app integration secret key. | `map` | `{}` | no |
+| <a name="input_frontend_image"></a> [frontend\_image](#input\_frontend\_image) | n/a | `string` | `"enterprise-frontend"` | no |
+| <a name="input_frontend_resources"></a> [frontend\_resources](#input\_frontend\_resources) | n/a | `map(any)` | <pre>{<br>  "cpu_limit": "1000m",<br>  "cpu_request": "150m",<br>  "memory_limit": "2048M",<br>  "memory_request": "128M",<br>  "replicas": 2<br>}</pre> | no |
+| <a name="input_gateway_image"></a> [gateway\_image](#input\_gateway\_image) | n/a | `string` | `"enterprise-gateway"` | no |
+| <a name="input_gateway_resources"></a> [gateway\_resources](#input\_gateway\_resources) | n/a | `map(any)` | <pre>{<br>  "cpu_limit": "1000m",<br>  "cpu_request": "150m",<br>  "memory_limit": "2048M",<br>  "memory_request": "128M",<br>  "replicas": 2<br>}</pre> | no |
 | <a name="input_ingress_enabled"></a> [ingress\_enabled](#input\_ingress\_enabled) | Deploy nginx ingress? | `bool` | `true` | no |
 | <a name="input_letsencrypt_email"></a> [letsencrypt\_email](#input\_letsencrypt\_email) | Email to use with letsencrypt. This is required if enable\_certmanager is enabled | `string` | `""` | no |
 | <a name="input_letsencrypt_server"></a> [letsencrypt\_server](#input\_letsencrypt\_server) | n/a | `string` | `"https://acme-v02.api.letsencrypt.org/directory"` | no |
@@ -87,7 +95,9 @@ No modules.
 | <a name="input_statsd_enabled"></a> [statsd\_enabled](#input\_statsd\_enabled) | n/a | `bool` | `false` | no |
 | <a name="input_tls_cert"></a> [tls\_cert](#input\_tls\_cert) | Path to certificate to use for TLS | `string` | `""` | no |
 | <a name="input_tls_key"></a> [tls\_key](#input\_tls\_key) | Path to private key to use for TLS | `string` | `""` | no |
-| <a name="input_web_resources"></a> [web\_resources](#input\_web\_resources) | n/a | `map(any)` | <pre>{<br>  "cpu_limit": "1000m",<br>  "cpu_request": "150m",<br>  "memory_limit": "2048M",<br>  "memory_request": "128M",<br>  "replicas": 2<br>}</pre> | no |
+| <a name="input_web_service_type"></a> [web\_service\_type](#input\_web\_service\_type) | n/a | `string` | `"NodePort"` | no |
+| <a name="input_worker_args"></a> [worker\_args](#input\_worker\_args) | Args to send to worker. This usually doesn't need to be adjusted. | `list` | <pre>[<br>  "worker",<br>  "--queue",<br>  "celery,uploads",<br>  "--concurrency",<br>  "1"<br>]</pre> | no |
+| <a name="input_worker_image"></a> [worker\_image](#input\_worker\_image) | n/a | `string` | `"enterprise-worker"` | no |
 | <a name="input_worker_resources"></a> [worker\_resources](#input\_worker\_resources) | n/a | `map(any)` | <pre>{<br>  "cpu_limit": "3000m",<br>  "cpu_request": "500m",<br>  "memory_limit": "1024M",<br>  "memory_request": "1024M",<br>  "replicas": 2<br>}</pre> | no |
 
 ## Outputs
@@ -95,12 +105,9 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_codecov_name"></a> [codecov\_name](#output\_codecov\_name) | n/a |
-| <a name="output_codecov_url"></a> [codecov\_url](#output\_codecov\_url) | n/a |
 | <a name="output_ingress_host"></a> [ingress\_host](#output\_ingress\_host) | n/a |
 | <a name="output_lb_ip"></a> [lb\_ip](#output\_lb\_ip) | n/a |
-| <a name="output_minio_secrets_name"></a> [minio\_secrets\_name](#output\_minio\_secrets\_name) | n/a |
 | <a name="output_namespace_name"></a> [namespace\_name](#output\_namespace\_name) | n/a |
-| <a name="output_web_name"></a> [web\_name](#output\_web\_name) | n/a |
 
 
 \* Specifying a codecov_version is recommended and requires the format `v$VERSION` e.g. `v4.6.5`

@@ -1,6 +1,7 @@
-resource "random_string" "timescale" {
-  length  = 16
-  special = false
+resource "random_password" "timescale" {
+  length           = 32
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
 resource "google_compute_instance" "timescale_db_server_primary" {
@@ -22,14 +23,14 @@ resource "google_compute_instance" "timescale_db_server_primary" {
   network_interface {
     network    = data.terraform_remote_state.cluster.outputs.network_name
     network_ip = google_compute_address.internal-address-replication[0].address
-    subnetwork = data.google_compute_subnetwork.my-subnetwork.name
+    subnetwork = data.google_compute_subnetwork.subnetwork.name
 
   }
 
 
   metadata_startup_script = templatefile("../../modules/timescale_db/files/timescale_replication_server_primary.sh", {
     MasterIP           = google_compute_address.internal-address-replication[0].address
-    timescale_password = random_string.timescale.result
+    timescale_password = random_password.timescale.result
     stanza_name        = "db-primary"
     bucket             = google_storage_bucket.postgres_backups.name
     IP_RANGE           = var.subnet_range
@@ -73,7 +74,7 @@ resource "google_compute_instance" "timescale_db_server_secondary" {
   network_interface {
     network    = data.terraform_remote_state.cluster.outputs.network_name
     network_ip = google_compute_address.internal-address-replication[1].address
-    subnetwork = data.google_compute_subnetwork.my-subnetwork.name
+    subnetwork = data.google_compute_subnetwork.subnetwork.name
 
   }
 
@@ -81,7 +82,7 @@ resource "google_compute_instance" "timescale_db_server_secondary" {
   metadata_startup_script = templatefile("../../modules/timescale_db/files/timescale_replication_server_secondary.sh", {
     MasterIP           = google_compute_address.internal-address-replication[0].address
     prepend_userdata   = var.prepend_userdata
-    timescale_password = random_string.timescale.result
+    timescale_password = random_password.timescale.result
 
   })
   metadata = var.metadata
@@ -125,15 +126,14 @@ resource "google_compute_firewall" "firewall-pods_cidr" {
     protocol = "ICMP"
   }
   source_ranges = [data.terraform_remote_state.cluster.outputs.pod_cidr]
-  #target_tags   = [local.tag]
 }
 
 
 resource "google_compute_address" "internal-address-replication" {
-  count        = var.timescale_server_replication_enabled ? 2 : 0
+  count        = var.timescale_server_replication_enabled ? 2 : 1
   name         = "${var.name}-internal-ip-${count.index}"
   address_type = "INTERNAL"
-  subnetwork   = data.google_compute_subnetwork.my-subnetwork.name
+  subnetwork   = data.google_compute_subnetwork.subnetwork.name
   region       = var.region
 }
 

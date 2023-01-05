@@ -29,7 +29,7 @@ variable "source_ranges" {
   description = ""
 }
 variable "source_inbound_ranges" {
-  default     = []
+  default     = ["10.0.1.0\\24"]
   description = "Should be all ingress addresses for timescale"
 }
 variable "name" {
@@ -52,7 +52,7 @@ variable "machine_type" {
 }
 variable "timescale_server_replication_enabled" {
   description = "is replication enabled"
-  default     = false
+  default     = true
 }
 
 variable "enable_secure_boot" {

@@ -18,7 +18,6 @@ resource "google_compute_instance" "timescale_db_server" {
     network    = data.terraform_remote_state.cluster.outputs.network_name
     network_ip = google_compute_address.internal-address-replication[0].address
     subnetwork = data.google_compute_subnetwork.subnetwork.name
-
   }
 
 

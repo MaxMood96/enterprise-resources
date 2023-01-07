@@ -20,5 +20,17 @@ sudo -u postgres psql -c "ALTER USER codecov PASSWORD '${timescale_password}';"
 HBA_CONF=$(sudo su - postgres -c "psql -t -P format=unaligned -c 'show hba_file';")
 sudo -u postgres bash -c "echo host all all 0.0.0.0/0 md5 >> $HBA_CONF"
 POSTGRES_CONF=$(sudo su - postgres -c "psql -t -P format=unaligned -c 'SHOW config_file';")
-sudo -u postgres bash -c "echo listen_addresses = \'*\' >> $POSTGRES_CONF"
+sudo -u postgres bash -c "cat <<EOF>> $POSTGRES_CONF
+listen_addresses = '*'
+wal_level = replica
+max_wal_senders = 10
+wal_keep_size = '1GB'
+wal_compression = on
+archive_mode = on
+archive_command = 'pgbackrest --stanza=${stanza_name} archive-push %p'
+EOF"
+sudo -u postgres psql -c "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;"
+
 systemctl restart postgresql@14-main.service
+
+${backups}

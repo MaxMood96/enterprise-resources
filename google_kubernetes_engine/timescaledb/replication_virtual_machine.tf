@@ -24,7 +24,6 @@ resource "google_compute_instance" "timescale_db_server_primary" {
     network    = data.terraform_remote_state.cluster.outputs.network_name
     network_ip = google_compute_address.internal-address-replication[0].address
     subnetwork = data.google_compute_subnetwork.subnetwork.name
-
   }
 
 
@@ -33,7 +32,7 @@ resource "google_compute_instance" "timescale_db_server_primary" {
     timescale_password = random_password.timescale.result
     stanza_name        = "db-primary"
     bucket             = google_storage_bucket.postgres_backups.name
-    IP_RANGE           = var.subnet_range
+    IP_RANGE           = data.google_compute_subnetwork.subnetwork.ip_cidr_range
     prepend_userdata   = var.prepend_userdata
     backups = templatefile("../../modules/timescale_db/files/pgbackrest.sh", {
       stanza_name = "db-primary"
@@ -75,7 +74,6 @@ resource "google_compute_instance" "timescale_db_server_secondary" {
     network    = data.terraform_remote_state.cluster.outputs.network_name
     network_ip = google_compute_address.internal-address-replication[1].address
     subnetwork = data.google_compute_subnetwork.subnetwork.name
-
   }
 
 
@@ -83,6 +81,7 @@ resource "google_compute_instance" "timescale_db_server_secondary" {
     MasterIP           = google_compute_address.internal-address-replication[0].address
     prepend_userdata   = var.prepend_userdata
     timescale_password = random_password.timescale.result
+    IP_RANGE           = data.google_compute_subnetwork.subnetwork.ip_cidr_range
 
   })
   metadata = var.metadata
@@ -124,7 +123,7 @@ resource "google_compute_firewall" "firewall-pods_cidr" {
   allow {
     protocol = "ICMP"
   }
-  source_ranges = [data.terraform_remote_state.cluster.outputs.pod_cidr]
+  source_ranges = [data.terraform_remote_state.cluster.outputs.pod_cidr, google_compute_address.internal-address-replication[0].address,google_compute_address.internal-address-replication[1].address]
 }
 
 

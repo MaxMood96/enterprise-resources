@@ -18,10 +18,12 @@ sudo -u postgres bash -c 'createuser codecov --superuser'
 sudo -u postgres psql -c "ALTER USER codecov PASSWORD '${timescale_password}';"
 sudo -u postgres bash -c "createuser replication --replication --login --connection-limit=1;"
 sudo -u postgres psql -c "ALTER USER replication PASSWORD '${timescale_password}';"
-#sudo -u postgres bash -c "host replication  replication  ${MasterIP}/24  md5 >> $HBA_CONF"
 sudo -u postgres bash -c "echo $HOSTNAME:5432:postgres:replication:${timescale_password} >> .pgpass"
 HBA_CONF=$(sudo su - postgres -c "psql -t -P format=unaligned -c 'show hba_file';")
-sudo -u postgres bash -c "echo host all all 0.0.0.0/0 md5 >> $HBA_CONF"
+sudo -u postgres bash -c "cat <<EOF>>$HBA_CONF
+ host replication  replication ${IP_RANGE}    md5
+ host all all 0.0.0.0/0 md5
+EOF"
 POSTGRES_CONF=$(sudo su - postgres -c "psql -t -P format=unaligned -c 'SHOW config_file';")
 POSTGRES_DATA=$(sudo su - postgres -c "psql -t -P format=unaligned -c 'SHOW data_directory';")
 

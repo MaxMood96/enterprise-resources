@@ -85,7 +85,7 @@ variable "elasticache_version" {
   default = "6.2"
 }
 variable "postgres_version" {
-  default = "14.2"
+  default = "14.3"
 }
 variable "dns_enabled" {
   description = "Whether to create route53 records for Codecov"
@@ -117,4 +117,8 @@ variable "codecov_namespace" {
 variable "vpc_name" {
   description = "The name of the vpc to create. This must match the vpc_name var in k8s-config template"
   default     = "codecov-vpc"
+}
+variable "timescale_vpc_subnet" {
+  description = "private subnet for timeescale vnet"
+  default =     "10.0.27.0/24"
 }

@@ -5,7 +5,8 @@ COMPRESS_LEVEL="3"
 REPO1_RETENTION_FULL="2"
 REPO_ENCRYPTION=$(sudo -u postgres bash -c "openssl rand -base64 48")
 POSTGRES_DATA=$(sudo su - postgres -c "psql -t -P format=unaligned -c 'SHOW data_directory';")
-
+if (${gcp} -eq true)
+then
 sudo -u postgres bash -c "cat <<EOF> /etc/pgbackrest.conf
 [db-primary]
 pg1-path=$POSTGRES_DATA
@@ -24,6 +25,29 @@ repo1-gcs-key-type=auto
 [global:archive-push]
 compress-level=$COMPRESS_LEVEL
 EOF"
+else
+  sudo -u postgres bash -c "cat <<EOF> /etc/pgbackrest.conf
+[db-primary]
+pg1-path=$POSTGRES_DATA
+[global]
+repo1-bundle=y
+repo1-path=$PGBACKREST_REPO
+repo1-retention-full=$REPO1_RETENTION_FULL
+repo1-cipher-pass= $REPO_ENCRYPTION
+repo1-cipher-type= aes-256-cbc
+start-fast=y
+
+repo1-s3-bucket=${bucket}
+repo1-s3-endpoint=${endpoint}
+repo1-s3-region=${region}
+repo1-s3-key-type=auto
+repo1-s3-role=timescale-role
+repo1-type=s3
+
+[global:archive-push]
+compress-level=$COMPRESS_LEVEL
+EOF"
+fi
 
 
 sudo -u postgres pgbackrest --stanza=db-primary --log-level-console=info stanza-create

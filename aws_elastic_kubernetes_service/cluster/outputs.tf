@@ -25,3 +25,18 @@ output "codecov_role_name" {
 output "alb_role_arn" {
   value = var.ingress_enabled ? aws_iam_role.ingress[0].arn : ""
 }
+output "vpc_security_group_ids" {
+  value = aws_security_group.eks.id
+}
+output "resource_tags" {
+  value = var.resource_tags
+}
+output "vpc_id" {
+  value = module.vpc
+}
+output "vpc_subnets" {
+  value = module.vpc.private_subnets_cidr_blocks
+}
+output "partition" {
+  value = local.partition
+}

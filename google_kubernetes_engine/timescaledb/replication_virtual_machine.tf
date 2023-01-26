@@ -1,7 +1,7 @@
 resource "random_password" "timescale" {
   length           = 32
-  special          = true
-  override_special = "!#$%&*()-_=+[]{}<>:?"
+  special          = false
+  #override_special = "!#$%&*()-_=+[]{}<>:"
 }
 
 resource "google_compute_instance" "timescale_db_server_primary" {

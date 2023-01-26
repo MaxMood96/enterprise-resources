@@ -1,15 +1,17 @@
+#!/bin/bash
+
 ${prepend_userdata}
 
 
 apt install -y gnupg postgresql-common apt-transport-https lsb-release wget
 wget --quiet -O - https://packagecloud.io/timescale/timescaledb/gpgkey | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/timescaledb.gpg
-/usr/share/postgresql-common/pgdg/apt.postgresql.org.sh
+/usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
 sudo echo "deb https://packagecloud.io/timescale/timescaledb/ubuntu/ $(lsb_release -c -s) main" | sudo tee /etc/apt/sources.list.d/timescaledb.list
 sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 sudo apt update
 apt install -y timescaledb-2-postgresql-14
 timescaledb-tune --quiet --yes
-apt install postgresql-client
+apt install postgresql-client -y
 systemctl restart postgresql
 timescaledb-tune --quiet --yes
 

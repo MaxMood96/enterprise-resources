@@ -6,7 +6,7 @@ data "aws_acm_certificate" "issued" {
 
 data "aws_iam_role" "ingress" {
   count = var.ingress_enabled ? 1 : 0
-  name  = "codecov-ingress-controller"
+  name  = data.terraform_remote_state.cluster.outputs.ingress_role
 }
 
 

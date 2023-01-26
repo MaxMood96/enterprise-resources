@@ -16,6 +16,8 @@ module "codecov" {
   codecov_yml_file     = var.codecov_yml
   ingress_enabled      = false # We want to use the AWS ingress
   minio_bucket         = local.connection_strings.minio_bucket
+  timescale_enabled    = true
+  timescale_url        = "${data.terraform_remote_state.timescaledb.outputs.timescale_url}/postgres"
   service_account_annotations = {
     "eks.amazonaws.com/role-arn" = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${data.terraform_remote_state.cluster.outputs.codecov_role_name}"
   }

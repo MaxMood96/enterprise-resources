@@ -15,7 +15,7 @@ locals {
       labels = {
         "role" = "web"
       }
-      iam_role_additional_policies = []
+      iam_role_additional_policies = {}
       vpc_security_group_ids       = [aws_security_group.eks.id]
       launch_template_name         = "web"
       eni_delete                   = "true"
@@ -36,7 +36,7 @@ locals {
       desired_size                 = var.worker_nodes
       max_size                     = var.worker_nodes * 2
       instance_types               = [var.worker_node_type]
-      iam_role_additional_policies = []
+      iam_role_additional_policies = {}
       vpc_security_group_ids       = [aws_security_group.eks.id]
       launch_template_name         = "worker"
       labels = {
@@ -185,6 +185,10 @@ module "eks" {
   cluster_additional_security_group_ids = [aws_security_group.eks.id]
   create_iam_role                       = true
   tags                                  = var.resource_tags
+
+  cluster_endpoint_public_access  = true
+  cluster_endpoint_private_access = false
+
 }
 
 resource "aws_iam_role_policy_attachment" "minio" {
@@ -192,4 +196,3 @@ resource "aws_iam_role_policy_attachment" "minio" {
   role       = each.value.iam_role_name
   policy_arn = aws_iam_policy.minio-s3.arn
 }
-

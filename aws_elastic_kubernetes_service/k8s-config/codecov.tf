@@ -5,6 +5,14 @@ module "codecov" {
   namespace            = var.namespace
   codecov_version      = var.codecov_version
   web_resources        = var.web_resources
+  gateway_resources    = var.gateway_resources
+  frontend_resources   = var.frontend_resources
+  frontend_image       = var.frontend_image
+  api_image            = var.api_image
+  worker_image         = var.worker_image
+  gateway_image        = var.gateway_image
+  codecov_repository   = var.codecov_repository
+  worker_args          = var.worker_args
   api_resources        = var.api_resources
   worker_resources     = var.worker_resources
   resource_tags        = var.resource_tags

@@ -1,6 +1,6 @@
 resource "random_password" "timescale" {
-  length           = 32
-  special          = false
+  length  = 32
+  special = false
   #override_special = "!#$%&*()-_=+[]{}<>:"
 }
 
@@ -123,7 +123,7 @@ resource "google_compute_firewall" "firewall-pods_cidr" {
   allow {
     protocol = "ICMP"
   }
-  source_ranges = [data.terraform_remote_state.cluster.outputs.pod_cidr, google_compute_address.internal-address-replication[0].address,google_compute_address.internal-address-replication[1].address]
+  source_ranges = [data.terraform_remote_state.cluster.outputs.pod_cidr, google_compute_address.internal-address-replication[0].address, google_compute_address.internal-address-replication[1].address]
 }
 
 

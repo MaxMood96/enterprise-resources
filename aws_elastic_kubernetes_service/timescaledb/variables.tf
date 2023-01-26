@@ -2,9 +2,7 @@ variable "timescale_server_replication_enabled" {
   default     = true
   description = "enabling creates 2 servers with primary/secondary replication"
 }
-variable "availability_zone" {
-  default = "us-gov-west-1a"
-}
+
 variable "instance_type" {
   default = "t3.micro"
 }
@@ -21,4 +19,8 @@ variable "public_key" {
 variable "vpc_private_name" {
   default     = "codecov-vpc-private"
   description = "private name for vpc"
+}
+variable "region" {
+  description = "AWS region"
+  default     = "us-east-1"
 }

@@ -1,7 +1,7 @@
 resource "random_password" "timescale" {
   length           = 32
-  special          = true
-  override_special = "!#$%&*()-_=+[]{}<>:?"
+  special          = false
+  #override_special = "!$%&*()-_=+[]{}<>?"
 }
 
 resource "aws_eip" "ec2" {
@@ -14,7 +14,7 @@ resource "aws_instance" "primary_ec2" {
   depends_on                  = [aws_eip.ec2]
   count                       = var.timescale_server_replication_enabled ? 1 : 0
   ami                         = data.aws_ami.ubuntu.id
-  availability_zone           = var.availability_zone
+  availability_zone           = data.aws_availability_zones.list.names[0]
   instance_type               = var.instance_type
   iam_instance_profile        = aws_iam_instance_profile.timescale.name
   associate_public_ip_address = true
@@ -46,7 +46,7 @@ resource "aws_instance" "secondary_ec2" {
   depends_on                  = [aws_eip.ec2]
   count                       = var.timescale_server_replication_enabled ? 1 : 0
   ami                         = data.aws_ami.ubuntu.id #"SupportedImages ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-20220421-0bfd8576-6b8c-416e-9afe-c85f76b0bb8f"
-  availability_zone           = var.availability_zone
+  availability_zone           = data.aws_availability_zones.list.names[0]
   instance_type               = var.instance_type
   iam_instance_profile        = aws_iam_instance_profile.timescale.name
   associate_public_ip_address = true

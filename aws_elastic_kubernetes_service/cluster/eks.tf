@@ -189,7 +189,6 @@ module "eks" {
   cluster_endpoint_public_access = true
   cluster_endpoint_private_access = false
 
- # aws_auth_accounts = [data.aws_caller_identity.current.account_id]
 }
 
 resource "aws_iam_role_policy_attachment" "minio" {

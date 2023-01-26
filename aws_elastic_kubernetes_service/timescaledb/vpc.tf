@@ -1,6 +1,6 @@
 resource "aws_subnet" "ec2_subnet" {
   vpc_id            = data.terraform_remote_state.cluster.outputs.vpc["vpc_id"]
-  availability_zone = var.availability_zone
+  availability_zone = data.aws_availability_zones.list.names[0]
   cidr_block        = cidrsubnet(var.subnet_ip, 4, 1)
 }
 

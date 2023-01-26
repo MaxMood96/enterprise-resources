@@ -6,7 +6,7 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | 4.39.0 |
+| <a name="provider_google"></a> [google](#provider\_google) | 4.37.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | 3.4.3 |
 
 ## Modules
@@ -49,7 +49,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_cluster_authorized_cidrs"></a> [cluster\_authorized\_cidrs](#input\_cluster\_authorized\_cidrs) | Map of cidr ranges to allow access to the cluster endopint. | `map(string)` | `{}` | no |
+| <a name="input_cluster_authorized_cidrs"></a> [cluster\_authorized\_cidrs](#input\_cluster\_authorized\_cidrs) | Map of cidr ranges to allow access to the cluster endpoint. | `map(string)` | `{}` | no |
 | <a name="input_deletion_protection"></a> [deletion\_protection](#input\_deletion\_protection) | Whether to enable deletion protection on the database | `bool` | `true` | no |
 | <a name="input_gcloud_project"></a> [gcloud\_project](#input\_gcloud\_project) | Google cloud project | `string` | n/a | yes |
 | <a name="input_minio_bucket_force_destroy"></a> [minio\_bucket\_force\_destroy](#input\_minio\_bucket\_force\_destroy) | Force is required to destroy the cloud sql bucket when it contains data | `bool` | `true` | no |
@@ -83,10 +83,13 @@ No modules.
 | <a name="output_minio_name"></a> [minio\_name](#output\_minio\_name) | n/a |
 | <a name="output_minio_secret_key"></a> [minio\_secret\_key](#output\_minio\_secret\_key) | n/a |
 | <a name="output_nat_address"></a> [nat\_address](#output\_nat\_address) | n/a |
+| <a name="output_network_name"></a> [network\_name](#output\_network\_name) | n/a |
+| <a name="output_pod_cidr"></a> [pod\_cidr](#output\_pod\_cidr) | n/a |
 | <a name="output_postgres_ip"></a> [postgres\_ip](#output\_postgres\_ip) | n/a |
 | <a name="output_postgres_pw"></a> [postgres\_pw](#output\_postgres\_pw) | n/a |
 | <a name="output_postgres_server_name"></a> [postgres\_server\_name](#output\_postgres\_server\_name) | n/a |
 | <a name="output_postgres_username"></a> [postgres\_username](#output\_postgres\_username) | n/a |
+| <a name="output_random_name"></a> [random\_name](#output\_random\_name) | n/a |
 | <a name="output_redis_hostname"></a> [redis\_hostname](#output\_redis\_hostname) | n/a |
 | <a name="output_redis_password"></a> [redis\_password](#output\_redis\_password) | n/a |
 | <a name="output_redis_port"></a> [redis\_port](#output\_redis\_port) | n/a |

@@ -16,4 +16,6 @@ module "codecov" {
   codecov_yml_file     = var.codecov_yml
   ingress_enabled      = false
   minio_bucket         = data.terraform_remote_state.cluster.outputs.minio_name
+  timescale_enabled    = true
+  timescale_url        = data.terraform_remote_state.timescaledb.outputs.timescale_url
 }

@@ -183,3 +183,9 @@ variable "worker_args" {
   default     = ["worker", "--queue", "celery,uploads", "--concurrency", "1"]
   description = "Args to send to worker. This usually doesn't need to be adjusted."
 }
+variable "timescale_url" {
+  default = ""
+}
+variable "timescale_enabled" {
+  default = false
+}

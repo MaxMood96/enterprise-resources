@@ -4,11 +4,10 @@ data "terraform_remote_state" "cluster" {
     path = "../cluster/terraform.tfstate"
   }
 }
-data "terraform_remote_state" "timescaledb" {
-  backend = "local"
-  config = {
-    path = "../timescaledb/terraform.tfstate"
-  }
-}
 data "google_client_config" "current" {
+}
+
+data "google_compute_subnetwork" "subnetwork" {
+  name   = data.terraform_remote_state.cluster.outputs.network_name
+  region = var.region
 }

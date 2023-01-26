@@ -186,7 +186,7 @@ module "eks" {
   create_iam_role                       = true
   tags                                  = var.resource_tags
 
-  cluster_endpoint_public_access = true
+  cluster_endpoint_public_access  = true
   cluster_endpoint_private_access = false
 
 }

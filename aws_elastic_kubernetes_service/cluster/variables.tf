@@ -120,5 +120,5 @@ variable "vpc_name" {
 }
 variable "timescale_vpc_subnet" {
   description = "private subnet for timeescale vnet"
-  default =     "10.0.27.0/24"
+  default     = "10.0.27.0/24"
 }

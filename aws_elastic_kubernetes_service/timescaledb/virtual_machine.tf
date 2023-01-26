@@ -1,7 +1,7 @@
 resource "aws_instance" "vm_ec2" {
   depends_on                  = [aws_eip.ec2]
   count                       = var.timescale_server_replication_enabled == false ? 1 : 0
-  ami                         = data.aws_ami.ubuntu.id 
+  ami                         = data.aws_ami.ubuntu.id
   availability_zone           = data.aws_availability_zones.list.names[0]
   instance_type               = var.instance_type
   iam_instance_profile        = aws_iam_instance_profile.timescale.name

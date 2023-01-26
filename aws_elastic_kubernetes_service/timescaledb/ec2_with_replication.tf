@@ -1,6 +1,6 @@
 resource "random_password" "timescale" {
-  length           = 32
-  special          = false
+  length  = 32
+  special = false
   #override_special = "!$%&*()-_=+[]{}<>?"
 }
 

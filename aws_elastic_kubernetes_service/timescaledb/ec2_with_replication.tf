@@ -16,7 +16,7 @@ resource "aws_instance" "primary_ec2" {
   ami                         = data.aws_ami.ubuntu.id
   availability_zone           = var.availability_zone
   instance_type               = var.instance_type
-  iam_instance_profile        = one(aws_iam_instance_profile.timescale.*.name)
+  iam_instance_profile        = aws_iam_instance_profile.timescale.name
   associate_public_ip_address = true
   key_name                    = aws_key_pair.timescale_db_key.key_name
   subnet_id                   = aws_subnet.ec2_subnet.id
@@ -48,7 +48,7 @@ resource "aws_instance" "secondary_ec2" {
   ami                         = data.aws_ami.ubuntu.id #"SupportedImages ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-20220421-0bfd8576-6b8c-416e-9afe-c85f76b0bb8f"
   availability_zone           = var.availability_zone
   instance_type               = var.instance_type
-  iam_instance_profile        = one(aws_iam_instance_profile.timescale.*.name)
+  iam_instance_profile        = aws_iam_instance_profile.timescale.name
   associate_public_ip_address = true
   key_name                    = aws_key_pair.timescale_db_key.key_name
   subnet_id                   = aws_subnet.ec2_subnet.id
@@ -69,15 +69,13 @@ resource "aws_instance" "secondary_ec2" {
 }
 
 resource "aws_security_group" "timescale" {
-  count       = var.timescale_server_replication_enabled ? 1 : 0
   description = "Controls access to the timescaledb"
-  vpc_id      = data.terraform_remote_state.cluster.outputs.vpc_id["vpc_id"]
+  vpc_id      = data.terraform_remote_state.cluster.outputs.vpc["vpc_id"]
   name        = "timescaledb-sg"
   tags        = data.terraform_remote_state.cluster.outputs.resource_tags
 }
 
 resource "aws_security_group_rule" "timescale-egress" {
-  count             = var.timescale_server_replication_enabled ? 1 : 0
   type              = "egress"
   from_port         = "0"
   to_port           = "0"
@@ -86,13 +84,4 @@ resource "aws_security_group_rule" "timescale-egress" {
   security_group_id = data.terraform_remote_state.cluster.outputs.vpc_security_group_ids
 }
 
-resource "aws_security_group_rule" "timescaledb-ingress-ssh" {
-  for_each          = toset(data.terraform_remote_state.cluster.outputs.vpc_subnets)
-  type              = "ingress"
-  from_port         = "22"
-  to_port           = "22"
-  protocol          = "tcp"
-  description       = each.key
-  cidr_blocks       = [each.value]
-  security_group_id = data.terraform_remote_state.cluster.outputs.vpc_security_group_ids
-}
+

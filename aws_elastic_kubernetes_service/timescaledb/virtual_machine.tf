@@ -1,10 +1,10 @@
-resource "aws_instance" "primary_ec2" {
+resource "aws_instance" "vm_ec2" {
   depends_on                  = [aws_eip.ec2]
   count                       = var.timescale_server_replication_enabled == false ? 1 : 0
   ami                         = data.aws_ami.ubuntu.id 
   availability_zone           = var.availability_zone
   instance_type               = var.instance_type
-  iam_instance_profile        = one(aws_iam_instance_profile.timescale.*.name)
+  iam_instance_profile        = aws_iam_instance_profile.timescale.name
   associate_public_ip_address = true
   key_name                    = aws_key_pair.timescale_db_key.key_name
   subnet_id                   = aws_subnet.ec2_subnet.id

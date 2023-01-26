@@ -28,17 +28,17 @@ resource "aws_iam_role_policy" "s3" {
 
 resource "aws_iam_role_policy_attachment" "ssm" {
   depends_on = [aws_iam_role.timescale]
-  role       = one(aws_iam_role.timescale.*.name)
+  role       = aws_iam_role.timescale.name
   policy_arn = "arn:${data.terraform_remote_state.cluster.outputs.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
 resource "aws_iam_role_policy_attachment" "ssm2" {
   depends_on = [aws_iam_role.timescale]
-  role       = one(aws_iam_role.timescale.*.name)
+  role       = aws_iam_role.timescale.name
   policy_arn = "arn:${data.terraform_remote_state.cluster.outputs.partition}:iam::aws:policy/CloudWatchAgentServerPolicy"
 }
 
 resource "aws_iam_instance_profile" "timescale" {
   name = "timescale_profile"
-  role = one(aws_iam_role.timescale.*.name)
+  role = aws_iam_role.timescale.name
 }

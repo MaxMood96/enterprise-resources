@@ -1,4 +1,5 @@
 #!/bin/bash
+
 ${prepend_userdata}
 
 apt install -y gnupg postgresql-common apt-transport-https lsb-release wget

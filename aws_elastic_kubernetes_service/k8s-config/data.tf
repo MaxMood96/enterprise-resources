@@ -28,3 +28,10 @@ data "aws_secretsmanager_secret_version" "connections" {
 }
 
 data "aws_caller_identity" "current" {}
+
+data "terraform_remote_state" "timescaledb" {
+  backend = "local"
+  config = {
+    path = "../timescaledb/terraform.tfstate"
+  }
+}

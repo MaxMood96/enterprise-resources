@@ -31,7 +31,7 @@ output "vpc_security_group_ids" {
 output "resource_tags" {
   value = var.resource_tags
 }
-output "vpc_id" {
+output "vpc" {
   value = module.vpc
 }
 output "vpc_subnets" {
@@ -39,4 +39,7 @@ output "vpc_subnets" {
 }
 output "partition" {
   value = local.partition
+}
+output "ingress_role" {
+  value = aws_iam_role.ingress[0].name
 }

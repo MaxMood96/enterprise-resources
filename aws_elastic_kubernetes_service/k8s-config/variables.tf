@@ -187,3 +187,43 @@ variable "extra_secret_volumes" {
     error_message = "All extra volumes must have a file_name to assign in the secret"
   }
 }
+variable "frontend_resources" {
+  type = map(any)
+  default = {
+    replicas       = 2
+    cpu_limit      = "1000m"
+    memory_limit   = "2048M"
+    cpu_request    = "150m"
+    memory_request = "128M"
+  }
+}
+variable "gateway_resources" {
+  type = map(any)
+  default = {
+    replicas       = 2
+    cpu_limit      = "1000m"
+    memory_limit   = "2048M"
+    cpu_request    = "150m"
+    memory_request = "128M"
+  }
+}
+variable "codecov_repository" {
+  default     = "codecov"
+  description = "Docker repository to retrieve Codecov images"
+}
+variable "api_image" {
+  default = "enterprise-api"
+}
+variable "frontend_image" {
+  default = "enterprise-frontend"
+}
+variable "worker_image" {
+  default = "enterprise-worker"
+}
+variable "gateway_image" {
+  default = "enterprise-gateway"
+}
+variable "worker_args" {
+  default     = ["worker", "--queue", "celery,uploads", "--concurrency", "1"]
+  description = "Args to send to worker. This usually doesn't need to be adjusted."
+}

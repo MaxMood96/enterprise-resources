@@ -12,7 +12,6 @@ module "codecov" {
   gateway_image        = var.gateway_image
   codecov_repository   = var.codecov_repository
   worker_args          = var.worker_args
-  web_resources        = var.web_resources
   api_resources        = var.api_resources
   worker_resources     = var.worker_resources
   resource_tags        = var.resource_tags

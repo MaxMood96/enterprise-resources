@@ -4,7 +4,6 @@ module "codecov" {
   extra_env            = local.extra_env
   namespace            = var.namespace
   codecov_version      = var.codecov_version
-  web_resources        = var.web_resources
   gateway_resources    = var.gateway_resources
   frontend_resources   = var.frontend_resources
   frontend_image       = var.frontend_image

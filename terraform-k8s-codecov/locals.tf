@@ -6,6 +6,7 @@ locals {
   codecov_yaml        = file("${path.root}/${var.codecov_yml_file}")
   codecov_yaml_object = yamldecode(local.codecov_yaml)
   codecov_url         = trimprefix(local.codecov_yaml_object["setup"]["codecov_url"], ("https://"))
+  codecov_api_url     = trimprefix(lookup(local.codecov_yaml_object["setup"], "codecov_api_url", local.codecov_yaml_object["setup"]["codecov_url"]), ("https://"))
   enable_certmanager  = var.enable_certmanager ? { run = true } : {}
   enable_external_tls = var.enable_external_tls ? { run = true } : {}
   minio               = var.minio_enabled ? { run = true } : {}

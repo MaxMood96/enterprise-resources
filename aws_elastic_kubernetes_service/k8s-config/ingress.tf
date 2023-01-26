@@ -83,9 +83,9 @@ resource "kubernetes_ingress_v1" "ingress" {
           path = "/"
           backend {
             service {
-              name = "web"
+              name = "gateway"
               port {
-                number = 5000
+                number = 8080
               }
             }
           }
@@ -94,9 +94,9 @@ resource "kubernetes_ingress_v1" "ingress" {
           path = "/*"
           backend {
             service {
-              name = "web"
+              name = "gateway"
               port {
-                number = 5000
+                number = 8080
               }
             }
           }

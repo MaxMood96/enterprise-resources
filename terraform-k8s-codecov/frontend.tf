@@ -1,20 +1,20 @@
-resource "kubernetes_deployment" "worker" {
+resource "kubernetes_deployment" "frontend" {
   metadata {
-    name        = "worker"
+    name        = "frontend"
     annotations = var.resource_tags
     namespace   = local.namespace
   }
   spec {
-    replicas = var.worker_resources["replicas"]
+    replicas = var.frontend_resources["replicas"]
     selector {
       match_labels = {
-        app = "worker"
+        app = "frontend"
       }
     }
     template {
       metadata {
         labels = {
-          app = "worker"
+          app = "frontend"
         }
       }
       spec {
@@ -35,9 +35,19 @@ resource "kubernetes_deployment" "worker" {
         }
         service_account_name = kubernetes_service_account.codecov.metadata.0.name
         container {
-          name  = "worker"
-          image = "${var.codecov_repository}/${var.worker_image}:${var.codecov_version}"
-          args  = var.worker_args
+          name  = "frontend"
+          image = "${var.codecov_repository}/${var.frontend_image}:${var.codecov_version}"
+          port {
+            container_port = 8000
+          }
+          env {
+            name  = "CODECOV_BASE_HOST"
+            value = local.codecov_url
+          }
+          env {
+            name  = "CODECOV_API_HOST"
+            value = local.codecov_api_url
+          }
           dynamic "env" {
             for_each = var.statsd_enabled ? { host = true } : {}
             content {
@@ -77,13 +87,21 @@ resource "kubernetes_deployment" "worker" {
           }
           resources {
             limits = {
-              cpu    = var.worker_resources["cpu_limit"]
-              memory = var.worker_resources["memory_limit"]
+              cpu    = var.frontend_resources["cpu_limit"]
+              memory = var.frontend_resources["memory_limit"]
             }
             requests = {
-              cpu    = var.worker_resources["cpu_request"]
-              memory = var.worker_resources["memory_request"]
+              cpu    = var.frontend_resources["cpu_request"]
+              memory = var.frontend_resources["memory_request"]
             }
+          }
+          readiness_probe {
+            http_get {
+              path = "/"
+              port = "8080"
+            }
+            initial_delay_seconds = 5
+            period_seconds        = 5
           }
           image_pull_policy = "Always"
           volume_mount {
@@ -102,9 +120,26 @@ resource "kubernetes_deployment" "worker" {
         }
       }
     }
-    strategy {
-      type = "RollingUpdate"
-    }
   }
 }
 
+resource "kubernetes_service" "frontend" {
+  metadata {
+    name        = "frontend"
+    annotations = var.resource_tags
+    namespace   = local.namespace
+  }
+  spec {
+    port {
+      protocol    = "TCP"
+      port        = "8080"
+      target_port = "8080"
+    }
+    selector = {
+      app = "frontend"
+    }
+  }
+  lifecycle {
+    ignore_changes = [metadata.0.annotations]
+  }
+}

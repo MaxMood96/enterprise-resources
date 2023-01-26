@@ -1,20 +1,20 @@
-resource "kubernetes_deployment" "web" {
+resource "kubernetes_deployment" "gateway" {
   metadata {
-    name        = "web"
+    name        = "gateway"
     annotations = var.resource_tags
     namespace   = local.namespace
   }
   spec {
-    replicas = var.web_resources["replicas"]
+    replicas = var.gateway_resources["replicas"]
     selector {
       match_labels = {
-        app = "web"
+        app = "gateway"
       }
     }
     template {
       metadata {
         labels = {
-          app = "web"
+          app = "gateway"
         }
       }
       spec {
@@ -35,10 +35,10 @@ resource "kubernetes_deployment" "web" {
         }
         service_account_name = kubernetes_service_account.codecov.metadata.0.name
         container {
-          name  = "web"
-          image = "codecov/enterprise-web:${var.codecov_version}"
+          name  = "gateway"
+          image = "${var.codecov_repository}/${var.gateway_image}:${var.codecov_version}"
           port {
-            container_port = 5000
+            container_port = 8000
           }
           dynamic "env" {
             for_each = var.statsd_enabled ? { host = true } : {}
@@ -79,18 +79,18 @@ resource "kubernetes_deployment" "web" {
           }
           resources {
             limits = {
-              cpu    = var.web_resources["cpu_limit"]
-              memory = var.web_resources["memory_limit"]
+              cpu    = var.gateway_resources["cpu_limit"]
+              memory = var.gateway_resources["memory_limit"]
             }
             requests = {
-              cpu    = var.web_resources["cpu_request"]
-              memory = var.web_resources["memory_request"]
+              cpu    = var.gateway_resources["cpu_request"]
+              memory = var.gateway_resources["memory_request"]
             }
           }
           readiness_probe {
             http_get {
-              path = "/login"
-              port = "5000"
+              path = "/gateway_health"
+              port = "8080"
             }
             initial_delay_seconds = 5
             period_seconds        = 5
@@ -115,25 +115,23 @@ resource "kubernetes_deployment" "web" {
   }
 }
 
-resource "kubernetes_service" "web" {
+resource "kubernetes_service" "gateway" {
   metadata {
-    name        = "web"
+    name        = "gateway"
     annotations = var.resource_tags
     namespace   = local.namespace
   }
   spec {
     port {
       protocol    = "TCP"
-      port        = "5000"
-      target_port = "5000"
+      port        = "8080"
+      target_port = "8080"
     }
     selector = {
-      app = "web"
+      app = "gateway"
     }
-    type = var.web_service_type
   }
   lifecycle {
     ignore_changes = [metadata.0.annotations]
   }
 }
-

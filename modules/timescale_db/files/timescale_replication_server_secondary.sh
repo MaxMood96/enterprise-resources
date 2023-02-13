@@ -1,4 +1,8 @@
 #!/bin/bash
+if test -f "/scripts/complete.txt"; then
+  echo "/scripts/complete.txt is done"
+else
+
 
 ${prepend_userdata}
 
@@ -58,4 +62,5 @@ sudo -u postgres bash -c "pg_basebackup -h ${MasterIP} -D $POSTGRES_DATA -w -P -
 
 systemctl start postgresql@14-main.service
 
-
+touch "/scripts/complete.txt"
+fi

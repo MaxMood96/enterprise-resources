@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if test -f "/scripts/complete.txt"; then
+  echo "/scripts/complete.txt is done"
+else
+
+
 ${prepend_userdata}
 
 apt install -y gnupg postgresql-common apt-transport-https lsb-release wget
@@ -43,3 +48,6 @@ sudo -u postgres psql -c "select * from pg_create_physical_replication_slot('db0
 sudo -u postgres psql -c "select slot_name, slot_type, active, wal_status from pg_replication_slots;"
 
 ${backups}
+
+touch "/scripts/complete.txt"
+fi

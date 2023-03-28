@@ -1,4 +1,7 @@
 #!/bin/bash
+if test -f "/scripts/complete.txt"; then
+  echo "/scripts/complete.txt is done"
+else
 
 ${prepend_userdata}
 
@@ -36,3 +39,6 @@ sudo -u postgres psql -c "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;"
 systemctl restart postgresql@14-main.service
 
 ${backups}
+
+touch "/scripts/complete.txt"
+fi

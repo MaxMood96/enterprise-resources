@@ -15,12 +15,16 @@ repo1-retention-full=$REPO1_RETENTION_FULL
 repo1-cipher-pass= $REPO_ENCRYPTION
 repo1-cipher-type= aes-256-cbc
 start-fast=y
+archive-async=y
+spool-path=/var/spool/pgbackrest
+archive-timeout=10000
 
 [global:archive-push]
 compress-level=$COMPRESS_LEVEL
+compress-type=lz4
+[global:archive-get]
+process-max=2
 EOF"
-
-
 
 if (${gcp} -eq true)
 then

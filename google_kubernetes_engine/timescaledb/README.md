@@ -3,8 +3,8 @@
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.15 |
-| <a name="requirement_postgresql"></a> [postgresql](#requirement\_postgresql) | 1.18.0 |
-| <a name="requirement_random"></a> [random](#requirement\_random) | 3.4.3 |
+| <a name="requirement_postgresql"></a> [postgresql](#requirement\_postgresql) | 14.x    |
+| <a name="requirement_random"></a> [random](#requirement\_random) | 3.4.3   |
 
 ## Providers
 
